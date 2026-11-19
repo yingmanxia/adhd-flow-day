@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { Bucket, MoveVia, TaskCategory, TaskPriority, TriageAction } from '../enums'
+import { Bucket, MoveVia, TaskPriority, TriageAction } from '../enums'
 
 export const uuidSchema = z.string().uuid()
 export const isoDateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/)
@@ -10,7 +10,6 @@ export const bucketSchema = z.nativeEnum(Bucket)
 export const moveViaSchema = z.nativeEnum(MoveVia)
 export const triageActionSchema = z.nativeEnum(TriageAction)
 export const taskPrioritySchema = z.nativeEnum(TaskPriority)
-export const taskCategorySchema = z.nativeEnum(TaskCategory)
 
 const timeWindowFields = {
   startAt: isoDateTimeSchema.optional(),
@@ -28,7 +27,6 @@ export const captureTaskSchema = z
     scheduledDate: isoDateSchema.optional(),
     estimateMin: z.number().int().nonnegative().optional(),
     priority: taskPrioritySchema.optional(),
-    category: taskCategorySchema.optional(),
     ...timeWindowFields,
   })
   .refine(validTimeWindow, {
@@ -82,7 +80,6 @@ export const taskViewSchema = z.object({
   dueAt: isoDateTimeSchema.nullable(),
   isFromSchedule: z.boolean(),
   priority: taskPrioritySchema,
-  category: taskCategorySchema,
   estimateMin: z.number().int().nonnegative(),
   actualMin: z.number().int().nonnegative(),
   deferCount: z.number().int().nonnegative(),

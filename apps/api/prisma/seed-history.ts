@@ -40,7 +40,6 @@ HISTORY_OFFSETS.forEach((offset, index) => {
     estimateMin,
     actualMin,
     completedAt,
-    category: index % 3 === 0 ? 'WORK' : 'LIFE',
   })
 
   completionSeeds.push({

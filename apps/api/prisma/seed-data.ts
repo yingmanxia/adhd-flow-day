@@ -6,7 +6,6 @@
 
 export type Bucket = 'INBOX' | 'UNSCHEDULED' | 'SCHEDULED' | 'TODAY' | 'DONE'
 export type Priority = 'HIGH' | 'MED' | 'LOW'
-export type Category = 'WORK' | 'LIFE' | 'HEALTH'
 export type PlanState = 'ACTIVE' | 'COMPLETED' | 'ARCHIVED'
 export type FocusState = 'RUNNING' | 'PAUSED' | 'COMPLETED' | 'EARLY_STOPPED'
 
@@ -69,7 +68,6 @@ export interface TaskSeed {
   scheduledDate?: Date
   startDate?: Date
   dueDate?: Date
-  category?: Category
   priority?: Priority
   estimateMin?: number
   actualMin?: number
@@ -146,7 +144,6 @@ export const todayTasks: TaskSeed[] = [
     scheduledDate: dateOnly(TODAY),
     startDate: atDate(TODAY, 9),
     dueDate: atDate(TODAY, 11),
-    category: 'WORK',
     priority: 'HIGH',
     estimateMin: 25,
     isFrog: true,
@@ -159,7 +156,6 @@ export const todayTasks: TaskSeed[] = [
     planId: PLAN_IDS[1],
     dailyPlanId: DAILY_PLAN_ID,
     scheduledDate: dateOnly(TODAY),
-    category: 'LIFE',
     estimateMin: 10,
     hasCream: true,
   },
@@ -170,7 +166,6 @@ export const todayTasks: TaskSeed[] = [
     orderIndex: 2,
     dailyPlanId: DAILY_PLAN_ID,
     scheduledDate: dateOnly(TODAY),
-    category: 'LIFE',
     estimateMin: 5,
     isFromSchedule: true,
   },
@@ -181,7 +176,6 @@ export const todayTasks: TaskSeed[] = [
     orderIndex: 3,
     dailyPlanId: DAILY_PLAN_ID,
     scheduledDate: dateOnly(TODAY),
-    category: 'WORK',
     estimateMin: 15,
     deferCount: 1,
   },
@@ -205,7 +199,6 @@ export const futureTasks: TaskSeed[] = [
     scheduledDate: dateOnly(TOMORROW),
     startDate: atDate(TOMORROW, 10),
     estimateMin: 30,
-    category: 'WORK',
     priority: 'HIGH',
   },
   {
@@ -216,7 +209,6 @@ export const futureTasks: TaskSeed[] = [
     scheduledDate: dateOnly(TOMORROW),
     startDate: atDate(TOMORROW, 18),
     estimateMin: 20,
-    category: 'LIFE',
   },
   {
     id: seedId(2, 22),
@@ -227,7 +219,6 @@ export const futureTasks: TaskSeed[] = [
     scheduledDate: dateOnly(TOMORROW),
     startDate: atDate(TOMORROW, 7),
     estimateMin: 20,
-    category: 'HEALTH',
   },
   {
     id: seedId(2, 23),
@@ -237,7 +228,6 @@ export const futureTasks: TaskSeed[] = [
     planId: PLAN_IDS[1],
     scheduledDate: dateOnly(THIS_WEEK_A),
     estimateMin: 25,
-    category: 'LIFE',
   },
   {
     id: seedId(2, 24),
@@ -246,7 +236,6 @@ export const futureTasks: TaskSeed[] = [
     orderIndex: 4,
     scheduledDate: dateOnly(THIS_WEEK_B),
     estimateMin: 10,
-    category: 'LIFE',
   },
   {
     id: seedId(2, 25),
@@ -257,7 +246,6 @@ export const futureTasks: TaskSeed[] = [
     scheduledDate: dateOnly(NEXT_WEEK_A),
     startDate: atDate(NEXT_WEEK_A, 9, 30),
     estimateMin: 45,
-    category: 'WORK',
     priority: 'HIGH',
   },
   {
@@ -268,7 +256,6 @@ export const futureTasks: TaskSeed[] = [
     planId: PLAN_IDS[2],
     scheduledDate: dateOnly(NEXT_WEEK_B),
     estimateMin: 30,
-    category: 'HEALTH',
   },
 ]
 
@@ -281,7 +268,6 @@ export const poolTasks: TaskSeed[] = [
     orderIndex: 0,
     planId: PLAN_IDS[0],
     estimateMin: 40,
-    category: 'WORK',
   },
   {
     id: seedId(2, 31),
@@ -290,7 +276,6 @@ export const poolTasks: TaskSeed[] = [
     orderIndex: 1,
     planId: PLAN_IDS[1],
     estimateMin: 20,
-    category: 'LIFE',
   },
   {
     id: seedId(2, 32),
@@ -299,6 +284,5 @@ export const poolTasks: TaskSeed[] = [
     orderIndex: 2,
     planId: PLAN_IDS[2],
     estimateMin: 15,
-    category: 'HEALTH',
   },
 ]

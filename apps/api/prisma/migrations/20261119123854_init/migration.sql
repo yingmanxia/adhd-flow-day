@@ -2,9 +2,6 @@
 CREATE TYPE "PlanStatus" AS ENUM ('ACTIVE', 'COMPLETED', 'ARCHIVED');
 
 -- CreateEnum
-CREATE TYPE "TaskCategory" AS ENUM ('WORK', 'LIFE', 'HEALTH');
-
--- CreateEnum
 CREATE TYPE "TaskPriority" AS ENUM ('HIGH', 'MED', 'LOW');
 
 -- CreateEnum
@@ -46,7 +43,6 @@ CREATE TABLE "Task" (
     "planId" UUID,
     "dailyPlanId" UUID,
     "title" TEXT NOT NULL,
-    "category" "TaskCategory" NOT NULL DEFAULT 'LIFE',
     "priority" "TaskPriority" NOT NULL DEFAULT 'MED',
     "bucket" "TaskBucket" NOT NULL DEFAULT 'INBOX',
     "startDate" TIMESTAMP(3),

@@ -52,13 +52,6 @@ export const TaskPriority = {
 } as const
 export type TaskPriority = (typeof TaskPriority)[keyof typeof TaskPriority]
 
-export const TaskCategory = {
-  WORK: 'WORK',
-  LIFE: 'LIFE',
-  HEALTH: 'HEALTH',
-} as const
-export type TaskCategory = (typeof TaskCategory)[keyof typeof TaskCategory]
-
 export const PlanStatus = {
   ACTIVE: 'ACTIVE',
   COMPLETED: 'COMPLETED',

@@ -56,7 +56,6 @@ function toTaskData(task: TaskSeed) {
     userId: USER_ID,
     title: task.title,
     bucket: task.bucket,
-    category: task.category ?? 'LIFE',
     priority: task.priority ?? 'MED',
     planId: task.planId ?? null,
     dailyPlanId: task.dailyPlanId ?? null,
