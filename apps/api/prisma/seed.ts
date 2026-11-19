@@ -66,7 +66,6 @@ function toTaskData(task: TaskSeed) {
     actualMin: task.actualMin ?? null,
     deferCount: task.deferCount ?? 0,
     isFrog: task.isFrog ?? false,
-    hasCream: task.hasCream ?? false,
     isFromSchedule: task.isFromSchedule ?? false,
     completedAt: task.completedAt ?? null,
     orderIndex: task.orderIndex,

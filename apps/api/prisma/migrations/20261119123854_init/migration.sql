@@ -51,7 +51,6 @@ CREATE TABLE "Task" (
     "actualMin" INTEGER,
     "deferCount" INTEGER NOT NULL DEFAULT 0,
     "isFrog" BOOLEAN NOT NULL DEFAULT false,
-    "hasCream" BOOLEAN NOT NULL DEFAULT false,
     "completedAt" TIMESTAMP(3),
     "scheduledDate" DATE,
     "isFromSchedule" BOOLEAN NOT NULL DEFAULT false,

@@ -85,7 +85,6 @@ model Task {
   actualMin       Int?
   deferCount      Int          @default(0)
   isFrog          Boolean      @default(false)
-  hasCream        Boolean      @default(false)
   completedAt     DateTime?
   scheduledDate   DateTime?    @db.Date
   // 到期浮现标记：SCHEDULED → TODAY 时置 true，改期/退回计划池时清 false

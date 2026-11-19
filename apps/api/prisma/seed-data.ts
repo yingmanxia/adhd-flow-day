@@ -73,7 +73,6 @@ export interface TaskSeed {
   actualMin?: number
   deferCount?: number
   isFrog?: boolean
-  hasCream?: boolean
   isFromSchedule?: boolean
   completedAt?: Date
 }
@@ -157,7 +156,6 @@ export const todayTasks: TaskSeed[] = [
     dailyPlanId: DAILY_PLAN_ID,
     scheduledDate: dateOnly(TODAY),
     estimateMin: 10,
-    hasCream: true,
   },
   {
     id: seedId(2, 3),
