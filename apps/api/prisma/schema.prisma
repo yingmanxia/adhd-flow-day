@@ -1,0 +1,197 @@
+// FlowDay 数据库模型 —— 对应《ADHD-架构设计文档》§5.2 / §6
+// 枚举值与 @flowday/types/src/enums.ts 一一对应，是同一套契约的持久化投影。
+// 约定：业务主键统一 UUID（避免本地 → 云端迁移时序列回填）；EVENT 埋点表按架构文档 §5.2 用 bigint 自增；
+// 日期维度用 @db.Date，时刻维度用 DateTime；所有软删除统一 deletedAt，不用布尔标记。
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PlanStatus {
+  ACTIVE
+  COMPLETED
+  ARCHIVED
+}
+
+enum TaskCategory {
+  WORK
+  LIFE
+  HEALTH
+}
+
+enum TaskPriority {
+  HIGH
+  MED
+  LOW
+}
+
+enum TaskBucket {
+  INBOX
+  UNSCHEDULED
+  SCHEDULED
+  TODAY
+  DONE
+}
+
+enum FocusSessionStatus {
+  RUNNING
+  PAUSED
+  COMPLETED
+  EARLY_STOPPED
+}
+
+model User {
+  id          String   @id @default(uuid()) @db.Uuid
+  email       String   @unique
+  displayName String
+  timezone    String   @default("Asia/Shanghai")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  plans          Plan[]
+  tasks          Task[]
+  dailyPlans     DailyPlan[]
+  completionLogs CompletionLog[]
+  focusSessions  FocusSession[]
+  events         Event[]
+}
+
+model Plan {
+  id           String     @id @default(uuid()) @db.Uuid
+  userId       String     @db.Uuid
+  title        String
+  motivation   String?
+  expectedDate DateTime?  @db.Date
+  status       PlanStatus @default(ACTIVE)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks Task[]
+
+  @@index([userId, status])
+}
+
+model Task {
+  id              String       @id @default(uuid()) @db.Uuid
+  userId          String       @db.Uuid
+  planId          String?      @db.Uuid
+  dailyPlanId     String?      @db.Uuid
+  title           String
+  category        TaskCategory @default(LIFE)
+  priority        TaskPriority @default(MED)
+  bucket          TaskBucket   @default(INBOX)
+  startDate       DateTime?
+  dueDate         DateTime?
+  estimateMin     Int?
+  actualMin       Int?
+  deferCount      Int          @default(0)
+  isFrog          Boolean      @default(false)
+  hasCream        Boolean      @default(false)
+  completedAt     DateTime?
+  scheduledDate   DateTime?    @db.Date
+  // 到期浮现标记：SCHEDULED → TODAY 时置 true，改期/退回计划池时清 false
+  isFromSchedule  Boolean      @default(false)
+  orderIndex      Int          @default(0)
+  deletedAt       DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan           Plan?           @relation(fields: [planId], references: [id], onDelete: SetNull)
+  dailyPlan      DailyPlan?      @relation(fields: [dailyPlanId], references: [id], onDelete: SetNull)
+  steps          Step[]
+  completionLogs CompletionLog[]
+  focusSessions  FocusSession[]
+
+  @@index([userId, bucket])
+  @@index([userId, bucket, scheduledDate])
+  @@index([planId])
+  @@index([dailyPlanId])
+  @@index([deletedAt])
+}
+
+model Step {
+  id         String  @id @default(uuid()) @db.Uuid
+  taskId     String  @db.Uuid
+  text       String
+  done       Boolean @default(false)
+  orderIndex Int     @default(0)
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([taskId, orderIndex])
+}
+
+model DailyPlan {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  planDate  DateTime @db.Date
+  createdAt DateTime @default(now())
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks Task[]
+
+  @@unique([userId, planDate])
+}
+
+model CompletionLog {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @db.Uuid
+  taskId      String   @db.Uuid
+  statDate    DateTime @db.Date
+  completedAt DateTime @default(now())
+  completed   Boolean  @default(true)
+  estimateMin Int?
+  actualMin   Int?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([userId, statDate])
+  @@index([taskId])
+}
+
+model FocusSession {
+  id             String             @id @default(uuid()) @db.Uuid
+  userId         String             @db.Uuid
+  taskId         String?            @db.Uuid
+  status         FocusSessionStatus @default(RUNNING)
+  plannedSec     Int
+  actualFocusSec Int                @default(0)
+  pauseCount     Int                @default(0)
+  startedAt      DateTime           @default(now())
+  endedAt        DateTime?
+  statDate       DateTime           @db.Date
+  // 幂等键：S5 的 focus 四端点用 Idempotency-Key 防重复「开始」
+  idempotencyKey String?            @unique
+  createdAt      DateTime           @default(now())
+
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  task Task? @relation(fields: [taskId], references: [id], onDelete: SetNull)
+
+  @@index([userId, statDate])
+  @@index([taskId])
+}
+
+model Event {
+  id         BigInt   @id @default(autoincrement())
+  userId     String?  @db.Uuid
+  eventName  String
+  props      Json     @default("{}")
+  sessionId  String
+  // SDK 生成的 eventId，服务端据此去重（断网重试不产生重复行）
+  eventId    String?  @unique
+  occurredAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([occurredAt])
+  @@index([eventName, occurredAt])
+  @@index([userId])
+}

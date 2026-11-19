@@ -8,6 +8,8 @@ import type { AppConfig } from './common/config.js'
 import { errorHandler } from './common/errors.js'
 import { loggerOptions } from './common/logger.js'
 import { createRequestId, registerRequestContext } from './common/request-id.js'
+import { disconnectDatabase } from './db/client.js'
+import { checkDatabase } from './db/health.js'
 
 export async function buildServer(config: AppConfig): Promise<FastifyInstance> {
   const app = Fastify({
@@ -30,11 +32,16 @@ export async function buildServer(config: AppConfig): Promise<FastifyInstance> {
     timestamp: new Date().toISOString(),
   }))
 
-  app.get('/ready', () => ({
-    status: 'ok',
-    checks: { config: 'ok' },
-    timestamp: new Date().toISOString(),
-  }))
+  // /ready 必须反映真实依赖状态：DB 不可用时返回 503，供编排与 S11 的 CI 冒烟判断。
+  app.get('/ready', async (_request, reply) => {
+    const database = await checkDatabase()
+    const ok = database === 'ok'
+    return reply.code(ok ? 200 : 503).send({
+      status: ok ? 'ok' : 'degraded',
+      checks: { config: 'ok', database },
+      timestamp: new Date().toISOString(),
+    })
+  })
 
   return app
 }
@@ -51,6 +58,7 @@ export async function start(): Promise<FastifyInstance> {
     logger.info({ signal }, 'draining: stop accepting new connections')
     app
       .close()
+      .then(() => disconnectDatabase())
       .then(() => {
         logger.info('drained: server closed')
         process.exit(0)

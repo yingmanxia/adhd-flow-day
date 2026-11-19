@@ -9,6 +9,8 @@ const envSchema = z.object({
   PORT: z.coerce.number().int().min(1).max(65535),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
   CORS_ORIGIN: z.string().optional(),
+  DATABASE_URL: z.string().min(1),
+  REDIS_URL: z.string().min(1),
 })
 
 export type AppConfig = z.infer<typeof envSchema> & { startedAt: Date }
