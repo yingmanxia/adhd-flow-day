@@ -69,6 +69,7 @@ export default [
     settings: {
       'boundaries/elements': [
         { type: 'core', pattern: 'packages/core/**' },
+        { type: 'types', pattern: 'packages/types/**' },
         { type: 'package', pattern: 'packages/*' },
         { type: 'app', pattern: 'apps/*' },
       ],

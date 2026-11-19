@@ -4,7 +4,10 @@
     "outDir": "dist",
     "rootDir": "src",
     "declaration": true,
-    "declarationMap": true
+    "declarationMap": true,
+    "paths": {
+      "@flowday/types": ["packages/types/dist/index.d.ts"]
+    }
   },
   "include": ["src/**/*.ts"]
 }
