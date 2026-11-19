@@ -9,9 +9,9 @@
   },
   "scripts": {
     "dev": "turbo run dev",
-    "dev:api": "pnpm --filter @onestep/api dev",
-    "dev:pc": "pnpm --filter @onestep/web-pc dev",
-    "dev:mobile": "pnpm --filter @onestep/web-mobile dev",
+    "dev:api": "pnpm --filter @flowday/api dev",
+    "dev:pc": "pnpm --filter @flowday/web-pc dev",
+    "dev:mobile": "pnpm --filter @flowday/web-mobile dev",
     "build": "turbo run build",
     "typecheck": "turbo run typecheck",
     "lint": "eslint . --max-warnings 0 && prettier --check .",
@@ -22,7 +22,7 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@onestep/eslint-config": "workspace:*",
+    "@flowday/eslint-config": "workspace:*",
     "eslint": "^9.39.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.6",

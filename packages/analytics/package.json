@@ -1,5 +1,5 @@
 {
-  "name": "@onestep/analytics",
+  "name": "@flowday/analytics",
   "version": "0.0.0",
   "private": true,
   "type": "module",

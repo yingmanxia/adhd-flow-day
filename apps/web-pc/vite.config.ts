@@ -9,7 +9,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: Object.fromEntries(
-      packageNames.map((name) => [`@onestep/${name}`, `${packagesDir}/${name}/src`]),
+      packageNames.map((name) => [`@flowday/${name}`, `${packagesDir}/${name}/src`]),
     ),
   },
   server: {

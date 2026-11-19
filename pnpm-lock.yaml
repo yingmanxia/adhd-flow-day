@@ -8,7 +8,7 @@ importers:
 
   .:
     devDependencies:
-      '@onestep/eslint-config':
+      '@flowday/eslint-config':
         specifier: workspace:*
         version: link:packages/eslint-config
       eslint:
@@ -63,7 +63,7 @@ importers:
 
   apps/web-mobile:
     dependencies:
-      '@onestep/ui':
+      '@flowday/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       '@tanstack/react-query':
@@ -103,7 +103,7 @@ importers:
 
   apps/web-pc:
     dependencies:
-      '@onestep/ui':
+      '@flowday/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       '@tanstack/react-query':

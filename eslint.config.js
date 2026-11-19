@@ -1,3 +1,3 @@
-import config from '@onestep/eslint-config/index.js'
+import config from '@flowday/eslint-config/index.js'
 
 export default config

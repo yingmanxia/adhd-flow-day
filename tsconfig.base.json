@@ -16,7 +16,7 @@
     "sourceMap": true,
     "baseUrl": ".",
     "paths": {
-      "@onestep/*": ["packages/*/src/index.ts"]
+      "@flowday/*": ["packages/*/src/index.ts"]
     }
   }
 }
