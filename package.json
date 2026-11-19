@@ -1,0 +1,41 @@
+{
+  "name": "adhd-flow-day",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.15.9",
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:api": "pnpm --filter @onestep/api dev",
+    "dev:pc": "pnpm --filter @onestep/web-pc dev",
+    "dev:mobile": "pnpm --filter @onestep/web-mobile dev",
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "lint": "eslint . --max-warnings 0 && prettier --check .",
+    "lint:fix": "eslint . --fix && prettier --write .",
+    "lint:lines": "node scripts/lint-lines.mjs",
+    "test": "turbo run test",
+    "format": "prettier --write .",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@onestep/eslint-config": "workspace:*",
+    "eslint": "^9.39.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.6",
+    "prettier": "^3.6.2",
+    "turbo": "^2.11.13",
+    "typescript": "^5.9.3"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix --max-warnings 0"
+    ],
+    "*.{js,mjs,json,css,yml,yaml}": [
+      "prettier --write"
+    ]
+  }
+}

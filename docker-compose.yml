@@ -1,0 +1,36 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: adhd-flow-day-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: adhd
+      POSTGRES_PASSWORD: adhd_local_only
+      POSTGRES_DB: adhd_flow_day
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U adhd -d adhd_flow_day']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: adhd-flow-day-redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:
+  redisdata:

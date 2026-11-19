@@ -1,0 +1,26 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-family);
+}
+
+.app-shell {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 48px 32px;
+}
+
+.app-shell h1 {
+  font-size: 28px;
+  margin: 0 0 12px;
+}
+
+.app-shell p {
+  color: var(--color-text-muted);
+  margin: 0;
+}
