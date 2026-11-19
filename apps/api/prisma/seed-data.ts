@@ -77,14 +77,6 @@ export interface TaskSeed {
   completedAt?: Date
 }
 
-export interface StepSeed {
-  id: string
-  taskId: string
-  text: string
-  done: boolean
-  orderIndex: number
-}
-
 export interface CompletionSeed {
   id: string
   taskId: string

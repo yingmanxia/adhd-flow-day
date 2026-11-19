@@ -14,16 +14,6 @@ export const createPlanSchema = z.object({
 
 export type CreatePlanInput = z.infer<typeof createPlanSchema>
 
-export const planStepSchema = z.object({
-  id: uuidSchema,
-  planId: uuidSchema,
-  text: z.string(),
-  done: z.boolean(),
-  orderIndex: z.number().int().nonnegative(),
-})
-
-export type PlanStepView = z.infer<typeof planStepSchema>
-
 export const planViewSchema = z.object({
   id: uuidSchema,
   title: z.string(),

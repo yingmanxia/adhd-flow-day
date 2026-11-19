@@ -97,7 +97,6 @@ model Task {
   user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   plan           Plan?           @relation(fields: [planId], references: [id], onDelete: SetNull)
   dailyPlan      DailyPlan?      @relation(fields: [dailyPlanId], references: [id], onDelete: SetNull)
-  steps          Step[]
   completionLogs CompletionLog[]
   focusSessions  FocusSession[]
 
@@ -106,18 +105,6 @@ model Task {
   @@index([planId])
   @@index([dailyPlanId])
   @@index([deletedAt])
-}
-
-model Step {
-  id         String  @id @default(uuid()) @db.Uuid
-  taskId     String  @db.Uuid
-  text       String
-  done       Boolean @default(false)
-  orderIndex Int     @default(0)
-
-  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
-
-  @@index([taskId, orderIndex])
 }
 
 model DailyPlan {

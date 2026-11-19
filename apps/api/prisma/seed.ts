@@ -13,7 +13,7 @@ import {
   todayTasks,
 } from './seed-data'
 import type { TaskSeed } from './seed-data'
-import { completionSeeds, focusSeeds, historyTasks, steps } from './seed-history'
+import { completionSeeds, focusSeeds, historyTasks } from './seed-history'
 
 // 根 .env 是本地唯一配置源（apps/api/src/common/config.ts 也从这里读）。
 // Prisma CLI 默认只找 cwd/.env，所以 seed 自己再加载一次，保证 `prisma db seed` 单独跑也能用。
@@ -45,7 +45,6 @@ export const SEED_COUNTS = {
   future: futureTasks.length,
   planPool: poolTasks.length,
   history: historyTasks.length,
-  steps: steps.length,
   completionLogs: completionSeeds.length,
   focusSessions: focusSeeds.length,
   events: 0,
@@ -108,11 +107,6 @@ async function seed(prisma: PrismaClient): Promise<void> {
     })
   }
 
-  for (const step of steps) {
-    const { id, ...data } = step
-    await prisma.step.upsert({ where: { id }, create: { id, ...data }, update: data })
-  }
-
   for (const log of completionSeeds) {
     const { id, ...data } = log
     await prisma.completionLog.upsert({
@@ -143,7 +137,6 @@ async function summary(prisma: PrismaClient): Promise<void> {
     future: await prisma.task.count({ where: { bucket: 'SCHEDULED' } }),
     planPool: await prisma.task.count({ where: { bucket: 'UNSCHEDULED' } }),
     history: await prisma.task.count({ where: { bucket: 'DONE' } }),
-    steps: await prisma.step.count(),
     completionLogs: await prisma.completionLog.count(),
     focusSessions: await prisma.focusSession.count(),
     events: await prisma.event.count(),

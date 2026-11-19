@@ -63,17 +63,6 @@ CREATE TABLE "Task" (
 );
 
 -- CreateTable
-CREATE TABLE "Step" (
-    "id" UUID NOT NULL,
-    "taskId" UUID NOT NULL,
-    "text" TEXT NOT NULL,
-    "done" BOOLEAN NOT NULL DEFAULT false,
-    "orderIndex" INTEGER NOT NULL DEFAULT 0,
-
-    CONSTRAINT "Step_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "DailyPlan" (
     "id" UUID NOT NULL,
     "userId" UUID NOT NULL,
@@ -150,9 +139,6 @@ CREATE INDEX "Task_dailyPlanId_idx" ON "Task"("dailyPlanId");
 CREATE INDEX "Task_deletedAt_idx" ON "Task"("deletedAt");
 
 -- CreateIndex
-CREATE INDEX "Step_taskId_orderIndex_idx" ON "Step"("taskId", "orderIndex");
-
--- CreateIndex
 CREATE UNIQUE INDEX "DailyPlan_userId_planDate_key" ON "DailyPlan"("userId", "planDate");
 
 -- CreateIndex
@@ -193,9 +179,6 @@ ALTER TABLE "Task" ADD CONSTRAINT "Task_planId_fkey" FOREIGN KEY ("planId") REFE
 
 -- AddForeignKey
 ALTER TABLE "Task" ADD CONSTRAINT "Task_dailyPlanId_fkey" FOREIGN KEY ("dailyPlanId") REFERENCES "DailyPlan"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Step" ADD CONSTRAINT "Step_taskId_fkey" FOREIGN KEY ("taskId") REFERENCES "Task"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "DailyPlan" ADD CONSTRAINT "DailyPlan_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -4,7 +4,7 @@
  */
 
 import { PLAN_IDS, TODAY, addDays, atDate, dateOnly, seedId } from './seed-data'
-import type { CompletionSeed, FocusSeed, StepSeed, TaskSeed } from './seed-data'
+import type { CompletionSeed, FocusSeed, TaskSeed } from './seed-data'
 
 // 近两月完成历史：24 条，供热力图 / 周回顾 / 完成记录卡聚合
 const HISTORY_OFFSETS = [
@@ -51,15 +51,6 @@ HISTORY_OFFSETS.forEach((offset, index) => {
     actualMin: Math.max(1, actualMin),
   })
 })
-
-export const steps: StepSeed[] = [
-  { id: seedId(3, 1), taskId: seedId(2, 1), text: '打开第三章', done: true, orderIndex: 0 },
-  { id: seedId(3, 2), taskId: seedId(2, 1), text: '读前 10 页', done: false, orderIndex: 1 },
-  { id: seedId(3, 3), taskId: seedId(2, 1), text: '记 3 条笔记', done: false, orderIndex: 2 },
-  { id: seedId(3, 4), taskId: seedId(2, 20), text: '导出文献列表', done: false, orderIndex: 0 },
-  { id: seedId(3, 5), taskId: seedId(2, 20), text: '按主题分组', done: false, orderIndex: 1 },
-  { id: seedId(3, 6), taskId: seedId(2, 20), text: '挑 5 篇精读', done: false, orderIndex: 2 },
-]
 
 export const focusSeeds: FocusSeed[] = [
   {
