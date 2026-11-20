@@ -1,3 +1,4 @@
+import { DomainError } from '@flowday/core'
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import { ZodError } from 'zod'
 
@@ -37,6 +38,17 @@ export async function errorHandler(
         message: error.message,
         requestId: request.id,
         ...(error.details === undefined ? {} : { details: error.details }),
+      },
+    })
+    return
+  }
+
+  if (error instanceof DomainError) {
+    await reply.status(400).send({
+      error: {
+        code: 'INVALID_TRANSITION',
+        message: error.message,
+        requestId: request.id,
       },
     })
     return

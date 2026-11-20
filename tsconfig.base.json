@@ -16,7 +16,7 @@
     "sourceMap": true,
     "baseUrl": ".",
     "paths": {
-      "@flowday/*": ["packages/*/src/index.ts"]
+      "@flowday/*": ["packages/*/dist/index.d.ts"]
     }
   }
 }
