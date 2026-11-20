@@ -554,7 +554,7 @@ button {
   padding: 0 12px;
   border: 1px solid var(--fd-line);
   border-radius: 8px;
-  background: #f7f7f5;
+  background: var(--fd-white); /* 默认白色底，灰色会被误读为不可选 */
   color: var(--fd-ink);
   font-size: 13px;
 }
@@ -574,7 +574,7 @@ button {
   padding: 0 30px 0 12px;
   border: 1px solid var(--fd-line);
   border-radius: 8px;
-  background: #f7f7f5;
+  background: var(--fd-white);
 }
 .plan-select__control.is-open {
   border-color: var(--fd-gold);
@@ -682,7 +682,7 @@ button {
   border: 1px solid var(--fd-line);
   border-radius: 8px;
   padding: 0 12px;
-  background: #f7f7f5;
+  background: var(--fd-white);
   color: var(--fd-hint);
   font-size: 13px;
   text-align: left;
@@ -709,9 +709,9 @@ button {
 .segment {
   flex: 1;
   height: 33px;
-  border: 0;
+  border: 1px solid var(--fd-gold);
   border-radius: 7px;
-  background: #f7f7f5;
+  background: var(--fd-white);
   color: var(--fd-muted-strong);
   font-size: 12px;
 }
@@ -1083,9 +1083,11 @@ button {
 }
 
 /* ── 记一件事表单 ─────────────────────────────── */
-/* 用户反馈：字段间距太小——抽屉字段间距从 16 → 22 → 28。 */
+/* 用户反馈：form-field 块之间固定 8px 间距；此前只写 gap 无 display:flex 导致间距从未生效。 */
 .capture-form {
-  gap: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 .field-select--button .is-placeholder {
   color: var(--fd-hint);
