@@ -709,7 +709,7 @@ button {
 .segment {
   flex: 1;
   height: 33px;
-  border: 1px solid var(--fd-gold);
+  border: 1px solid var(--fd-gold-soft); /* 用户反馈：金色边框太显眼，降为选中态背景色的浅金 */
   border-radius: 7px;
   background: var(--fd-white);
   color: var(--fd-muted-strong);
