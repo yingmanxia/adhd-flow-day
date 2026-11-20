@@ -345,6 +345,9 @@ button {
   border-radius: 3px;
   background: #c4c3c0;
 }
+.dot--today {
+  background: var(--fd-gold);
+}
 .queue-card__title {
   flex: 1;
   min-width: 0;
@@ -986,6 +989,10 @@ button {
   justify-content: space-between;
   color: var(--fd-muted);
   font-size: 10px;
+}
+.plan-card__due {
+  color: var(--fd-gold-deep);
+  font-family: var(--fd-font-num);
 }
 .plan-card__group {
   align-self: flex-start;

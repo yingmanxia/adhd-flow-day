@@ -46,7 +46,7 @@ export function MergeSheet() {
         current && (
           <>
             <div className="merge-actions">
-              <Button variant="ghost" onClick={nextMerge}>
+              <Button variant="ghost" onClick={closeMerge}>
                 稍后
               </Button>
               <Button disabled={merge.isPending} onClick={() => merge.mutate(current.id)}>

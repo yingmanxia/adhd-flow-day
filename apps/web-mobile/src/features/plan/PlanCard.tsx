@@ -41,6 +41,7 @@ export function PlanCard({
 
   const percent = plan.taskCount > 0 ? Math.round((plan.doneCount / plan.taskCount) * 100) : 0
   const waiting = tasks.filter((task) => task.bucket === 'UNSCHEDULED')
+  const today = tasks.filter((task) => task.bucket === 'TODAY')
   const done = tasks.filter((task) => task.bucket === 'DONE')
   const statusLabel =
     plan.status === 'COMPLETED' ? '已完成' : plan.status === 'ARCHIVED' ? '已归档' : '进行中'
@@ -57,12 +58,10 @@ export function PlanCard({
 
       <div className="plan-card__row">
         <span>
-          {plan.doneCount} / {plan.taskCount} 项
+          {plan.doneCount} / {plan.taskCount} 项 · {percent}%
         </span>
-        <span>
-          {plan.status === 'COMPLETED'
-            ? '100% 达成'
-            : `${percent}% · 预期 ${plan.expectedDate ? formatShortDate(plan.expectedDate.slice(0, 10)) : '待定'}`}
+        <span className="plan-card__due">
+          截止 {plan.expectedDate ? formatShortDate(plan.expectedDate.slice(0, 10)) : '待定'}
         </span>
       </div>
       <Progress value={plan.doneCount} max={plan.taskCount} />
@@ -79,6 +78,15 @@ export function PlanCard({
               <button type="button" className="arrange-btn" onClick={() => onArrange(task)}>
                 安排 ›
               </button>
+            </div>
+          ))}
+
+          {today.length > 0 && <span className="plan-card__group">今日待办 · {today.length}</span>}
+          {today.map((task) => (
+            <div key={task.id} className="plan-task">
+              <span className="dot dot--today" aria-hidden="true" />
+              <span className="plan-task__title">{task.title}</span>
+              <span className="plan-task__date">今日</span>
             </div>
           ))}
 

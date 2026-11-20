@@ -9,6 +9,7 @@ import { PlansPage } from '../features/plan/PlansPage.js'
 import { InboxPage } from '../features/triage/InboxPage.js'
 import { TodayPage } from '../features/today/TodayPage.js'
 
+import { BackBar } from './BackBar.js'
 import { BottomNav } from './BottomNav.js'
 import { SideMenu } from './SideMenu.js'
 import { TopBar } from './TopBar.js'
@@ -35,13 +36,21 @@ export function App() {
           path="/plans"
           element={
             <>
-              <TopBar title="所有计划" />
+              <BackBar title="所有计划" />
               <PlansPage />
             </>
           }
         />
         <Route path="/future" element={<FuturePage />} />
-        <Route path="/achievements" element={<AchievementsPage />} />
+        <Route
+          path="/achievements"
+          element={
+            <>
+              <BackBar title="成就榜" />
+              <AchievementsPage />
+            </>
+          }
+        />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       {pathname !== '/inbox' && <BottomNav />}
