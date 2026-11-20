@@ -27,8 +27,8 @@ export function PlansPage() {
     if (!expandedId && plans.length > 0) setExpandedId(plans[0]!.id)
   }, [plans, expandedId])
 
-  if (isLoading) return <div className="plans-page hint">正在整理计划…</div>
-  if (isError) return <div className="plans-page hint">{friendlyMessage(error)}</div>
+  if (isLoading) return <div className="page-content plans-page hint">正在整理计划…</div>
+  if (isError) return <div className="page-content plans-page hint">{friendlyMessage(error)}</div>
 
   const visible = plans.filter((plan) =>
     filter === 'ALL'
@@ -65,7 +65,7 @@ export function PlansPage() {
   }
 
   return (
-    <div className="plans-page">
+    <div className="page-content plans-page">
       <button type="button" className="new-plan-btn" onClick={openNew}>
         ＋ 新建计划
       </button>

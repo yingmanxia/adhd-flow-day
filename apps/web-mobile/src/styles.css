@@ -678,6 +678,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
   height: 44px;
   border: 1px solid var(--fd-line);
   border-radius: 8px;
@@ -686,6 +687,32 @@ button {
   color: var(--fd-hint);
   font-size: 13px;
   text-align: left;
+}
+.field-select--button > span:first-child {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.field-select--button .is-placeholder {
+  color: var(--fd-hint);
+}
+/* 字段值右侧的清除按钮（如预期完成时间）。 */
+.field-clear {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  border-radius: 9px;
+  background: #e8e7e4;
+  color: var(--fd-muted-strong);
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
 }
 .chip-row,
 .segment-row,
@@ -878,6 +905,7 @@ button {
 }
 
 /* ── 所有计划 ─────────────────────────────────── */
+/* 页面容器复用 .page-content（内边距与每日规划一致），这里只管块间距。 */
 .plans-page {
   display: flex;
   flex-direction: column;
@@ -1088,9 +1116,6 @@ button {
   display: flex;
   flex-direction: column;
   gap: 8px;
-}
-.field-select--button .is-placeholder {
-  color: var(--fd-hint);
 }
 
 /* ── 日期时间选择抽屉（Ardot 45:549/45:724） ──── */

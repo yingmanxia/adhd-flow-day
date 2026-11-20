@@ -72,12 +72,14 @@ function Wheel({
 
 /**
  * 日期时间选择抽屉（Ardot 45:549/45:724）：月历必选日期，上下午/时/分滚轮可选。
- * 复用入口：记一件事的开始/截止时间，后续安排到未来、5 分钟专注排期同样可用。
+ * 复用入口：记一件事的开始/截止时间、新建计划的预期完成时间、后续安排到未来等。
+ * showTime=false 时为纯日期选择（无时刻开关与滚轮），供「预期完成时间」等场景。
  */
 export function DateTimePicker({
   open,
   title,
   taskTitle,
+  showTime = true,
   value,
   onConfirm,
   onClose,
@@ -85,6 +87,8 @@ export function DateTimePicker({
   open: boolean
   title: string
   taskTitle?: string
+  /** 是否允许选择具体时刻；false = 纯日期（日期必选，无时分）。 */
+  showTime?: boolean
   value: DateTimeValue | null
   onConfirm: (value: DateTimeValue) => void
   onClose: () => void
@@ -110,11 +114,11 @@ export function DateTimePicker({
     const [y, m] = initial.dateKey.split('-').map(Number)
     setCursor({ year: y ?? 2026, month: m ?? 1 })
     setDateKey(initial.dateKey)
-    setTimeOn(initial.time !== null)
+    setTimeOn(showTime ? initial.time !== null : false)
     setPeriod(initial.time?.period ?? 'AM')
     setHour(initial.time?.hour ?? 9)
     setMinute(initial.time?.minute ?? 0)
-  }, [open, value])
+  }, [open, value, showTime])
 
   const weeks = monthGrid(cursor.year, cursor.month)
   const shiftMonth = (delta: number) => {
@@ -125,14 +129,15 @@ export function DateTimePicker({
   function confirm() {
     onConfirm({
       dateKey,
-      time: timeOn ? { period, hour, minute } : null,
+      time: showTime && timeOn ? { period, hour, minute } : null,
     })
     onClose()
   }
 
   const hours = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'))
   const minutes = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'))
-  const selectedTime = timeOn ? toTimeString({ dateKey, time: { period, hour, minute } }) : null
+  const selectedTime =
+    showTime && timeOn ? toTimeString({ dateKey, time: { period, hour, minute } }) : null
 
   return (
     <Sheet
@@ -155,7 +160,9 @@ export function DateTimePicker({
           <span>选好日期再定时分</span>
         </div>
       )}
-      <p className="picker-subtitle">默认今天当时 · 可改任意日期与时刻</p>
+      <p className="picker-subtitle">
+        {showTime ? '默认今天当时 · 可改任意日期与时刻' : '只选日期，不含具体时刻'}
+      </p>
 
       <div className="picker-cal">
         <div className="picker-cal__head">
@@ -194,21 +201,25 @@ export function DateTimePicker({
         </div>
       </div>
 
-      <label className="picker-time-toggle">
-        <input type="checkbox" checked={timeOn} onChange={(e) => setTimeOn(e.target.checked)} />
-        <span>指定具体时刻（可选）</span>
-      </label>
+      {showTime && (
+        <>
+          <label className="picker-time-toggle">
+            <input type="checkbox" checked={timeOn} onChange={(e) => setTimeOn(e.target.checked)} />
+            <span>指定具体时刻（可选）</span>
+          </label>
 
-      {timeOn && (
-        <div className="picker-wheel" role="listbox">
-          <Wheel
-            items={['上午', '下午']}
-            index={period === 'AM' ? 0 : 1}
-            onSelect={(i) => setPeriod(i === 0 ? 'AM' : 'PM')}
-          />
-          <Wheel items={hours} index={hour - 1} onSelect={(i) => setHour(i + 1)} />
-          <Wheel items={minutes} index={minute} onSelect={setMinute} />
-        </div>
+          {timeOn && (
+            <div className="picker-wheel" role="listbox">
+              <Wheel
+                items={['上午', '下午']}
+                index={period === 'AM' ? 0 : 1}
+                onSelect={(i) => setPeriod(i === 0 ? 'AM' : 'PM')}
+              />
+              <Wheel items={hours} index={hour - 1} onSelect={(i) => setHour(i + 1)} />
+              <Wheel items={minutes} index={minute} onSelect={setMinute} />
+            </div>
+          )}
+        </>
       )}
 
       <p className="picker-summary">
