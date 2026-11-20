@@ -915,25 +915,33 @@ button {
   flex-direction: column;
   gap: 12px;
 }
+/* 页面顶部工具条：筛选区居左、主操作居右，固定行高不随列表伸缩。 */
+.page-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex: 0 0 auto;
+}
 .new-plan-btn {
-  width: 100%;
-  height: 56px;
+  flex: 0 0 auto;
+  height: 33px;
   padding: 0 14px;
   border: 0;
-  border-radius: 10px;
+  border-radius: 8px;
   background: var(--fd-gold);
   color: var(--fd-white);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  text-align: left;
 }
 .plan-stats {
   display: flex;
+  align-items: center;
   gap: 8px;
 }
 .plan-stat {
-  flex: 1;
   height: 33px;
+  padding: 0 12px;
   display: flex;
   align-items: center;
   justify-content: center;

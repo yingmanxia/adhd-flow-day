@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 
 import { useAppStore } from '../../app/store.js'
+import { PageToolbar } from '../../components/PageToolbar.js'
 
 import { PlanCard } from './PlanCard.js'
 import { PlanFormSheet } from './PlanFormSheet.js'
@@ -80,21 +81,26 @@ export function PlansPage() {
 
   return (
     <div className="page-content plans-page">
-      <button type="button" className="new-plan-btn" onClick={openNew}>
-        ＋ 新建计划
-      </button>
-      <div className="plan-stats">
-        {stats.map((item) => (
-          <button
-            key={item.key}
-            type="button"
-            className={`plan-stat${filter === item.key ? ' is-active' : ''}`}
-            onClick={() => setFilter(item.key)}
-          >
-            {item.count} {item.label}
+      <PageToolbar
+        action={
+          <button type="button" className="new-plan-btn" onClick={openNew}>
+            ＋ 计划
           </button>
-        ))}
-      </div>
+        }
+      >
+        <div className="plan-stats">
+          {stats.map((item) => (
+            <button
+              key={item.key}
+              type="button"
+              className={`plan-stat${filter === item.key ? ' is-active' : ''}`}
+              onClick={() => setFilter(item.key)}
+            >
+              {item.count} {item.label}
+            </button>
+          ))}
+        </div>
+      </PageToolbar>
 
       {visible.map((plan) => (
         <PlanCard
@@ -105,7 +111,7 @@ export function PlansPage() {
           onArrange={arrange}
         />
       ))}
-      {visible.length === 0 && <p className="hint">这里还没有计划，点「新建计划」开始</p>}
+      {visible.length === 0 && <p className="hint">这里还没有计划，点「＋ 计划」开始</p>}
 
       <PlanFormSheet open={formOpen} plan={editing} onClose={() => setFormOpen(false)} />
     </div>
