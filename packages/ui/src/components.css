@@ -107,6 +107,60 @@
   position: absolute;
   inset: 0;
   background: rgba(55, 53, 47, 0.32);
+  animation: fd-fade-in 0.3s ease-out both;
+}
+.fd-overlay.is-closing {
+  animation: fd-fade-out 0.3s ease-in both;
+}
+
+/* 弹层动画：antd 同款缓动——进场 ease-out、出场 ease-in，时长 0.3s（缓进缓出）。 */
+@keyframes fd-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes fd-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes fd-slide-up-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes fd-slide-up-out {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+@keyframes fd-slide-left-in {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes fd-slide-left-out {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
 }
 
 .fd-sheet,
@@ -129,6 +183,10 @@
   background: var(--fd-white);
   box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.16);
   padding: 18px 20px 30px;
+  animation: fd-slide-up-in 0.3s cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+.fd-sheet__panel.is-closing {
+  animation: fd-slide-up-out 0.3s cubic-bezier(0.755, 0.05, 0.855, 0.06) both;
 }
 .fd-sheet__handle {
   width: 40px;
@@ -180,6 +238,30 @@
   background: var(--fd-white);
   box-shadow: 0 10px 30px rgba(41, 31, 13, 0.18);
   padding: 20px;
+  animation: fd-zoom-in 0.3s cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+.fd-modal__panel.is-closing {
+  animation: fd-zoom-out 0.3s cubic-bezier(0.755, 0.05, 0.855, 0.06) both;
+}
+@keyframes fd-zoom-in {
+  from {
+    transform: translate(-50%, -50%) scale(0.88);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+@keyframes fd-zoom-out {
+  from {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(0.88);
+    opacity: 0;
+  }
 }
 .fd-modal__head {
   padding-bottom: 12px;

@@ -11,7 +11,6 @@ import { TodayPage } from '../features/today/TodayPage.js'
 
 import { BottomNav } from './BottomNav.js'
 import { SideMenu } from './SideMenu.js'
-import { StatusBar } from './StatusBar.js'
 import { TopBar } from './TopBar.js'
 import { useAppStore } from './store.js'
 
@@ -21,7 +20,6 @@ export function App() {
 
   return (
     <div className="phone">
-      <StatusBar />
       <Routes>
         <Route
           path="/"

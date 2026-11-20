@@ -1,6 +1,8 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
 import { useEffect, useMemo } from 'react'
 
+import { usePresence } from './presence.js'
+
 export type ButtonVariant = 'primary' | 'ghost' | 'outline' | 'subtle' | 'soft' | 'danger'
 
 export function Button({
@@ -68,11 +70,18 @@ export function Sheet({
   headerExtra?: ReactNode
 }) {
   useEscape(open, onClose)
-  if (!open) return null
+  const { mounted, unmount } = usePresence(open)
+  if (!mounted) return null
+  const closing = !open
   return (
     <div className="fd-sheet" role="dialog" aria-modal="true" aria-label={title}>
-      <div className="fd-overlay" onClick={onClose} />
-      <div className={`fd-sheet__panel ${className}`}>
+      <div className={`fd-overlay${closing ? ' is-closing' : ''}`} onClick={onClose} />
+      <div
+        className={`fd-sheet__panel ${className}${closing ? ' is-closing' : ''}`}
+        onAnimationEnd={(e) => {
+          if (closing && e.target === e.currentTarget) unmount()
+        }}
+      >
         <div className="fd-sheet__handle" />
         <div className="fd-sheet__head">
           <strong>{title}</strong>
@@ -101,11 +110,20 @@ export function Modal({
   bare?: boolean
 }) {
   useEscape(open, onClose)
-  if (!open) return null
+  const { mounted, unmount } = usePresence(open)
+  if (!mounted) return null
+  const closing = !open
   return (
     <div className="fd-modal" role="dialog" aria-modal="true" aria-label={title}>
-      <div className="fd-overlay" onClick={onClose} />
-      <div className={`fd-modal__panel${bare ? ' fd-modal__panel--bare' : ''}`}>
+      <div className={`fd-overlay${closing ? ' is-closing' : ''}`} onClick={onClose} />
+      <div
+        className={`fd-modal__panel${bare ? ' fd-modal__panel--bare' : ''}${
+          closing ? ' is-closing' : ''
+        }`}
+        onAnimationEnd={(e) => {
+          if (closing && e.target === e.currentTarget) unmount()
+        }}
+      >
         {!bare && (
           <div className="fd-modal__head">
             <strong>{title}</strong>

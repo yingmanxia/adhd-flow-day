@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom'
+import { usePresence } from '@flowday/ui'
 
 import { useAppStore } from './store.js'
 
@@ -8,16 +9,27 @@ const ITEMS = [
   { label: '成就榜', icon: '★', path: '/achievements' },
 ] as const
 
+/** 左滑抽屉：与 ui 包 Sheet 同款缓进缓出，关闭时先播出场动画再卸载。 */
 export function SideMenu() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const { menuOpen, setMenuOpen, showToast } = useAppStore()
-  if (!menuOpen) return null
+  const { mounted, unmount } = usePresence(menuOpen)
+  if (!mounted) return null
+  const closing = !menuOpen
 
   return (
     <div className="menu-layer" role="dialog" aria-modal="true" aria-label="侧边菜单">
-      <div className="fd-overlay" onClick={() => setMenuOpen(false)} />
-      <aside className="side-menu">
+      <div
+        className={`fd-overlay${closing ? ' is-closing' : ''}`}
+        onClick={() => setMenuOpen(false)}
+      />
+      <aside
+        className={`side-menu${closing ? ' is-closing' : ''}`}
+        onAnimationEnd={(e) => {
+          if (closing && e.target === e.currentTarget) unmount()
+        }}
+      >
         <div className="side-menu__brand">
           <div className="side-menu__logo">✓</div>
           <strong>FlowDay</strong>
