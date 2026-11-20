@@ -1,10 +1,14 @@
+import { configureApiClient } from '@flowday/api-client'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter } from 'react-router-dom'
 import '@flowday/ui/tokens.css'
+import '@flowday/ui/components.css'
 import './styles.css'
 import { App } from './app/App'
+
+configureApiClient({ baseUrl: String(import.meta.env.VITE_API_BASE_URL ?? '/api') })
 
 const queryClient = new QueryClient({
   defaultOptions: {

@@ -1,0 +1,142 @@
+.fd-btn {
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 10px 16px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--color-primary);
+  color: #3a2a08;
+}
+.fd-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.fd-btn--ghost {
+  background: transparent;
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+.fd-btn--danger {
+  background: #fff0ee;
+  color: #b23b2e;
+}
+
+.fd-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+.fd-checkbox input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.fd-checkbox__box {
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--color-primary-strong);
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 14px;
+}
+.fd-checkbox input:checked + .fd-checkbox__box {
+  background: var(--color-primary-strong);
+}
+
+.fd-fab {
+  position: fixed;
+  right: 20px;
+  bottom: 24px;
+  width: 56px;
+  height: 56px;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: #3a2a08;
+  font-size: 30px;
+  box-shadow: 0 6px 18px rgba(160, 110, 20, 0.35);
+  cursor: pointer;
+}
+
+.fd-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+}
+.fd-sheet__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(30, 24, 12, 0.4);
+}
+.fd-sheet__panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-width: 390px;
+  margin: 0 auto;
+  background: var(--color-surface);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  padding: 18px;
+  max-height: 82vh;
+  overflow-y: auto;
+}
+.fd-sheet__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.fd-sheet__body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fd-badge {
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #f4ede0;
+  color: #6d5c3f;
+}
+.fd-badge--plan {
+  background: var(--color-primary-soft);
+  color: #8a5d0a;
+}
+.fd-badge--schedule {
+  background: #e7f4e9;
+  color: #2d6b3a;
+}
+
+.fd-progress {
+  height: 8px;
+  background: #f1e7d4;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.fd-progress__bar {
+  height: 100%;
+  background: var(--color-primary);
+  transition: width 0.25s ease;
+}
+
+.fd-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%);
+  background: #37312a;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  z-index: 60;
+  max-width: 320px;
+  text-align: center;
+}

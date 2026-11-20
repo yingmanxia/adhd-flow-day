@@ -27,6 +27,7 @@ function view(overrides: Partial<TaskView> = {}): TaskView {
     startAt: null,
     dueAt: null,
     isFromSchedule: false,
+    isFrog: false,
     priority: 'MED',
     estimateMin: 10,
     actualMin: 0,
@@ -99,13 +100,19 @@ describe('TaskService.capture（捕捉路由）', () => {
     expect(h.create).toHaveBeenCalledWith(USER, expect.objectContaining({ bucket: 'INBOX' }))
   })
 
-  it('带 planId 时保留计划归属（计划拆解走同一端点）', async () => {
+  it('带 planId 且无日期时进计划池（计划拆解走同一端点）', async () => {
     const h = makeRepo()
     await new TaskService(h.repo).capture(USER, { title: '读第三章', planId: PLAN_ID })
     expect(h.create).toHaveBeenCalledWith(
       USER,
-      expect.objectContaining({ planId: PLAN_ID, bucket: 'INBOX' }),
+      expect.objectContaining({ planId: PLAN_ID, bucket: 'UNSCHEDULED' }),
     )
+  })
+
+  it('捕捉时保留青蛙标记', async () => {
+    const h = makeRepo()
+    await new TaskService(h.repo).capture(USER, { title: '先做最难的那件', isFrog: true })
+    expect(h.create).toHaveBeenCalledWith(USER, expect.objectContaining({ isFrog: true }))
   })
 })
 

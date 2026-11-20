@@ -14,6 +14,17 @@ export const createPlanSchema = z.object({
 
 export type CreatePlanInput = z.infer<typeof createPlanSchema>
 
+export const updatePlanSchema = z
+  .object({
+    title: z.string().min(1).optional(),
+    motivation: z.string().nullable().optional(),
+    expectedDate: isoDateSchema.nullable().optional(),
+    status: planStatusSchema.optional(),
+  })
+  .refine((value) => Object.keys(value).length > 0, { message: '至少提供一个待更新字段' })
+
+export type UpdatePlanInput = z.infer<typeof updatePlanSchema>
+
 export const planViewSchema = z.object({
   id: uuidSchema,
   title: z.string(),

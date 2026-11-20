@@ -27,6 +27,7 @@ export const captureTaskSchema = z
     scheduledDate: isoDateSchema.optional(),
     estimateMin: z.number().int().nonnegative().optional(),
     priority: taskPrioritySchema.optional(),
+    isFrog: z.boolean().optional(),
     ...timeWindowFields,
   })
   .refine(validTimeWindow, {
@@ -79,6 +80,7 @@ export const taskViewSchema = z.object({
   startAt: isoDateTimeSchema.nullable(),
   dueAt: isoDateTimeSchema.nullable(),
   isFromSchedule: z.boolean(),
+  isFrog: z.boolean(),
   priority: taskPrioritySchema,
   estimateMin: z.number().int().nonnegative(),
   actualMin: z.number().int().nonnegative(),

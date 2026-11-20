@@ -17,6 +17,7 @@ export interface TaskWriteData {
   estimateMin: number | null
   orderIndex: number
   isFromSchedule: boolean
+  isFrog: boolean
 }
 
 export interface MoveUpdateData {
@@ -39,6 +40,7 @@ export const VIEW_SELECT = {
   startDate: true,
   dueDate: true,
   isFromSchedule: true,
+  isFrog: true,
   priority: true,
   estimateMin: true,
   actualMin: true,
@@ -59,6 +61,7 @@ export function toTaskView(row: ViewRow): TaskView {
     startAt: row.startDate?.toISOString() ?? null,
     dueAt: row.dueDate?.toISOString() ?? null,
     isFromSchedule: row.isFromSchedule,
+    isFrog: row.isFrog,
     priority: row.priority,
     estimateMin: row.estimateMin ?? 0,
     actualMin: row.actualMin ?? 0,

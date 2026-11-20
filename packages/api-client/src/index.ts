@@ -1,1 +1,5 @@
-export {}
+export { request, configureApiClient } from './client.js'
+export type { RequestOptions } from './client.js'
+export { ApiClientError, friendlyMessage } from './errors.js'
+export { api } from './queries.js'
+export type { DailyResponse } from './queries.js'

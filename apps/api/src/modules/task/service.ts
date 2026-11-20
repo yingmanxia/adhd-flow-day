@@ -34,7 +34,8 @@ export class TaskService {
     const today = toDateKey(new Date(), TODAY_TIMEZONE)
     const dateKey =
       input.scheduledDate ?? (input.startAt ? toDateKey(input.startAt, TODAY_TIMEZONE) : undefined)
-    let bucket: Bucket = 'INBOX'
+    // 带 planId 且无日期 = 计划下拆解出的任务，直接进计划池；散装留空才进收件箱。
+    let bucket: Bucket = input.planId ? 'UNSCHEDULED' : 'INBOX'
     if (dateKey === today) bucket = 'TODAY'
     else if (dateKey && addDays(today, 1) <= dateKey) bucket = 'SCHEDULED'
 
@@ -49,6 +50,7 @@ export class TaskService {
       estimateMin: input.estimateMin ?? null,
       orderIndex: 0,
       isFromSchedule: false,
+      isFrog: input.isFrog ?? false,
     }
     return this.repo.create(userId, data)
   }
