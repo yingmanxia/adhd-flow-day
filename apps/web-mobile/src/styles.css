@@ -695,6 +695,10 @@ button {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+/* 已设置时间/日期时文案与 input 一致用主色；未设置维持占位灰。 */
+.field-select--button > span:first-child:not(.is-placeholder) {
+  color: var(--fd-ink);
+}
 .field-select--button .is-placeholder {
   color: var(--fd-hint);
 }
