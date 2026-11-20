@@ -201,4 +201,20 @@ export class TaskRepository {
     })
     return toTaskView(row)
   }
+
+  /** 取消完成：回今日 + 清空完成时刻/实际用时（完成日志的删除由 Service 同事务处理）。 */
+  async uncomplete(id: string, scheduledDate: Date, tx: PrismaClient): Promise<TaskView> {
+    const row = await tx.task.update({
+      where: { id },
+      data: {
+        bucket: 'TODAY',
+        scheduledDate,
+        completedAt: null,
+        actualMin: null,
+        isFromSchedule: false,
+      },
+      select: VIEW_SELECT,
+    })
+    return toTaskView(row)
+  }
 }

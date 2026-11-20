@@ -98,6 +98,18 @@ export class TaskService {
     return inTransaction((tx) => this.repo.defer(id, to, tx))
   }
 
+  /** 取消完成：DONE→TODAY（via=kanban 状态机守卫），同事务删除完成日志、清空完成时刻。 */
+  async uncomplete(userId: string, id: string): Promise<TaskView> {
+    const row = await this.requireRow(userId, id)
+    if (row.bucket !== 'DONE') throw badRequest('只有已完成的任务可以取消完成')
+    assertMove({ from: row.bucket, to: 'TODAY', via: 'kanban' })
+    const today = toDateKey(new Date(), TODAY_TIMEZONE)
+    return inTransaction(async (tx) => {
+      await tx.completionLog.deleteMany({ where: { taskId: id, completed: true } })
+      return this.repo.uncomplete(id, new Date(`${today}T00:00:00.000Z`), tx)
+    })
+  }
+
   /** 唯一位置变更入口：所有写动作都经 core 状态机守卫后再落库。 */
   async move(
     userId: string,

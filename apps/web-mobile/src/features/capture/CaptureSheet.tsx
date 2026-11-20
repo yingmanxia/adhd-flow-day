@@ -1,40 +1,44 @@
 import { api, friendlyMessage } from '@flowday/api-client'
 import type { Bucket, TaskPriority } from '@flowday/types'
 import { Button, Sheet } from '@flowday/ui'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 
-import { toIsoAt, todayKey } from '../../app/date.js'
+import {
+  formatDateTimeValue,
+  toIsoAt,
+  toTimeString,
+  todayKey,
+  type DateTimeValue,
+} from '../../app/date.js'
 import { useAppStore } from '../../app/store.js'
+import { DateTimePicker } from '../../components/DateTimePicker.js'
 
 const EMPTY = {
   title: '',
   estimate: '5',
-  start: '09:00',
-  due: '18:00',
+  start: null as DateTimeValue | null,
+  due: null as DateTimeValue | null,
   priority: 'MED' as TaskPriority,
   planId: '',
 }
 
-const TIME_OPTIONS = [
-  { value: '07:00', label: '今天 07:00' },
-  { value: '09:00', label: '今天 09:00' },
-  { value: '12:00', label: '今天 12:00' },
-  { value: '18:00', label: '今天 18:00' },
-  { value: '21:00', label: '今天 21:00' },
-]
 const PRIORITIES: { value: TaskPriority; label: string }[] = [
   { value: 'LOW', label: '低' },
   { value: 'MED', label: '中' },
   { value: 'HIGH', label: '高' },
 ]
 
+type PickerField = 'start' | 'due' | null
+
 export function CaptureSheet() {
   const open = useAppStore((s) => s.captureOpen)
   const setOpen = useAppStore((s) => s.setCaptureOpen)
   const showToast = useAppStore((s) => s.showToast)
+  const queryClient = useQueryClient()
   const [form, setForm] = useState(EMPTY)
   const [saving, setSaving] = useState(false)
+  const [picker, setPicker] = useState<PickerField>(null)
   const { data: plans = [] } = useQuery({
     queryKey: ['plans'],
     queryFn: api.listPlans,
@@ -55,6 +59,8 @@ export function CaptureSheet() {
     if (!form.title.trim() || saving) return
     setSaving(true)
     try {
+      const startTime = form.start ? toTimeString(form.start) : null
+      const dueTime = form.due ? toTimeString(form.due) : null
       const task = await api.captureTask({
         title: form.title.trim(),
         bucket,
@@ -62,8 +68,9 @@ export function CaptureSheet() {
         ...(form.planId ? { planId: form.planId } : {}),
         ...(form.estimate ? { estimateMin: Number(form.estimate) } : {}),
         priority: form.priority,
-        ...(form.start ? { startAt: toIsoAt(dateKey, form.start) } : {}),
-        ...(form.due ? { dueAt: toIsoAt(dateKey, form.due) } : {}),
+        // 只选日期不选时刻 = 不落具体时间戳，仅日期语义。
+        ...(startTime ? { startAt: toIsoAt(form.start!.dateKey, startTime) } : {}),
+        ...(dueTime ? { dueAt: toIsoAt(form.due!.dateKey, dueTime) } : {}),
       })
       const label: Record<Bucket, string> = {
         INBOX: '收件箱',
@@ -73,6 +80,8 @@ export function CaptureSheet() {
         DONE: '已完成',
       }
       showToast(`已${bucket === 'INBOX' ? '暂存' : '保存'}到${label[task.bucket]}`)
+      // 顶栏收件箱角标读 daily 聚合，暂存/保存后立即失效缓存刷新数字。
+      void queryClient.invalidateQueries({ queryKey: ['daily'] })
       setForm(EMPTY)
       setOpen(false)
     } catch (error) {
@@ -123,41 +132,25 @@ export function CaptureSheet() {
           </div>
         </div>
 
-        <label className="form-field">
-          <span>开始时间</span>
-          <span className="field-wrap">
-            <select
-              className="field-select"
-              value={form.start}
-              onChange={(e) => patch({ start: e.target.value })}
-            >
-              <option value="">不设置</option>
-              {TIME_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </span>
-        </label>
+        <div className="form-field">
+          <span className="form-label">开始时间</span>
+          <button type="button" className="field-select--button" onClick={() => setPicker('start')}>
+            <span className={form.start ? '' : 'is-placeholder'}>
+              {form.start ? formatDateTimeValue(form.start) : '不设置'}
+            </span>
+            <span aria-hidden="true">⌄</span>
+          </button>
+        </div>
 
-        <label className="form-field">
-          <span>截止时间</span>
-          <span className="field-wrap">
-            <select
-              className="field-select"
-              value={form.due}
-              onChange={(e) => patch({ due: e.target.value })}
-            >
-              <option value="">不设置</option>
-              {TIME_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </span>
-        </label>
+        <div className="form-field">
+          <span className="form-label">截止时间</span>
+          <button type="button" className="field-select--button" onClick={() => setPicker('due')}>
+            <span className={form.due ? '' : 'is-placeholder'}>
+              {form.due ? formatDateTimeValue(form.due) : '不设置'}
+            </span>
+            <span aria-hidden="true">⌄</span>
+          </button>
+        </div>
 
         <div className="form-field">
           <span className="form-label">优先级</span>
@@ -203,6 +196,18 @@ export function CaptureSheet() {
         </div>
         <p className="form-footnote">暂存 → 进收件箱待分流；保存 → 直接成为今日待办</p>
       </form>
+
+      <DateTimePicker
+        open={picker !== null}
+        title={picker === 'start' ? '开始时间' : '截止时间'}
+        taskTitle={form.title.trim() || undefined}
+        value={picker === 'start' ? form.start : picker === 'due' ? form.due : null}
+        onConfirm={(value) => {
+          if (picker === 'start') patch({ start: value })
+          else if (picker === 'due') patch({ due: value })
+        }}
+        onClose={() => setPicker(null)}
+      />
     </Sheet>
   )
 }

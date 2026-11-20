@@ -44,6 +44,38 @@ export function TodayPage() {
     onSettled: () => void queryClient.invalidateQueries({ queryKey: ['daily'] }),
   })
 
+  // 取消完成：DONE→TODAY（后端同事务删完成日志），点已勾选的方框即触发。
+  const uncomplete = useMutation({
+    mutationFn: (task: TaskView) => api.uncompleteTask(task.id),
+    onMutate: async (task) => {
+      await queryClient.cancelQueries({ queryKey: ['daily'] })
+      const previous = queryClient.getQueryData<DailyResponse>(['daily'])
+      queryClient.setQueryData<DailyResponse>(['daily'], (old) =>
+        old
+          ? {
+              ...old,
+              doneTasks: old.doneTasks.filter((t) => t.id !== task.id),
+              tasks: [
+                {
+                  ...task,
+                  bucket: 'TODAY',
+                  completedAt: null,
+                  actualMin: 0,
+                },
+                ...old.tasks,
+              ],
+            }
+          : old,
+      )
+      return { previous }
+    },
+    onError: (error, _task, context) => {
+      if (context?.previous) queryClient.setQueryData(['daily'], context.previous)
+      showToast(friendlyMessage(error))
+    },
+    onSettled: () => void queryClient.invalidateQueries({ queryKey: ['daily'] }),
+  })
+
   if (isLoading) return <div className="page-content hint">正在整理今天…</div>
 
   const done = daily?.doneTasks ?? []
@@ -73,7 +105,7 @@ export function TodayPage() {
         <ul className="today-rows">
           {done.map((task) => (
             <li key={task.id} className="today-row">
-              <Checkbox checked label={task.title} done onChange={() => undefined} />
+              <Checkbox checked label={task.title} done onChange={() => uncomplete.mutate(task)} />
               <time className="today-row__time">{formatTime(task.completedAt)}</time>
             </li>
           ))}

@@ -49,6 +49,8 @@ export const api = {
     request<{ task: TaskView }>(`/tasks/${id}/complete`, { method: 'POST', body: input }).then(
       (r) => r.task,
     ),
+  uncompleteTask: (id: string) =>
+    request<{ task: TaskView }>(`/tasks/${id}/uncomplete`, { method: 'POST' }).then((r) => r.task),
   moveTask: (id: string, input: MoveTaskInput) =>
     request<{ task: TaskView }>(`/tasks/${id}/move`, { method: 'POST', body: input }).then(
       (r) => r.task,

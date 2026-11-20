@@ -53,6 +53,11 @@ export function registerTaskRoutes(app: FastifyInstance, service = new TaskServi
     return { task: await service.complete(userId, id, input) }
   })
 
+  app.post('/api/tasks/:id/uncomplete', async (request) => {
+    const { id } = taskIdParamsSchema.parse(request.params)
+    return { task: await service.uncomplete(userId, id) }
+  })
+
   app.post('/api/tasks/:id/defer', async (request) => {
     const { id } = taskIdParamsSchema.parse(request.params)
     const { to } = deferTaskRequestSchema.parse(request.body)
