@@ -1093,7 +1093,6 @@ button {
   height: 114px; /* 三行可见（设计稿 45:549） */
   border-radius: 10px;
   overflow: hidden;
-  background: var(--fd-gold-light);
 }
 .wheel {
   overflow-y: auto;
@@ -1107,13 +1106,12 @@ button {
   display: grid;
   place-items: center;
   scroll-snap-align: center;
-  color: var(--fd-muted);
+  color: #b8b6b0; /* 未选中调浅色 */
   font-family: var(--fd-font-num);
   font-size: 14px;
   cursor: pointer;
 }
 .wheel__item.is-active {
-  background: var(--fd-cream);
   color: var(--fd-gold-deep);
   font-weight: 600;
 }
