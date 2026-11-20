@@ -190,7 +190,7 @@
   animation: fd-slide-up-out 0.3s cubic-bezier(0.755, 0.05, 0.855, 0.06) both;
 }
 .fd-sheet__handle {
-  flex-shrink: 0;
+  flex: 0 0 auto;
   width: 40px;
   height: 4px;
   margin: 0 auto 16px;
@@ -199,7 +199,7 @@
 }
 .fd-sheet__head,
 .fd-modal__head {
-  flex-shrink: 0;
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -226,13 +226,14 @@
 }
 /* 抽屉中部：超过限高时内部滚动，头部/底部固定。 */
 .fd-sheet__body {
-  flex: 1 1 auto;
+  flex: 1 1 0%;
   min-height: 0;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 }
 .fd-sheet__foot {
-  flex-shrink: 0;
+  flex: 0 0 auto;
   padding-top: 16px;
 }
 .fd-sheet__body,
