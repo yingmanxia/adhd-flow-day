@@ -52,6 +52,42 @@ HISTORY_OFFSETS.forEach((offset, index) => {
   })
 })
 
+/** 今日已完成两件：让「今日待办」卡按原型显示完成进度与完成时间。 */
+const atShanghai = (key: string, hour: number, minute: number): Date =>
+  new Date(`${key}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:00+08:00`)
+
+export const todayDoneTasks: TaskSeed[] = [
+  {
+    id: seedId(2, 300),
+    title: '整理桌面 10 分钟',
+    bucket: 'DONE',
+    orderIndex: 0,
+    estimateMin: 10,
+    actualMin: 10,
+    scheduledDate: dateOnly(TODAY),
+    completedAt: atShanghai(TODAY, 9, 12),
+  },
+  {
+    id: seedId(2, 301),
+    title: '回复导师邮件',
+    bucket: 'DONE',
+    orderIndex: 1,
+    estimateMin: 15,
+    actualMin: 15,
+    scheduledDate: dateOnly(TODAY),
+    completedAt: atShanghai(TODAY, 10, 35),
+  },
+]
+
+export const todayCompletionSeeds: CompletionSeed[] = todayDoneTasks.map((task, index) => ({
+  id: seedId(5, 100 + index),
+  taskId: task.id,
+  statDate: dateOnly(TODAY),
+  completedAt: task.completedAt!,
+  estimateMin: task.estimateMin!,
+  actualMin: task.actualMin!,
+}))
+
 export const focusSeeds: FocusSeed[] = [
   {
     id: seedId(6, 1),

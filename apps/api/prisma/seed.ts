@@ -13,7 +13,13 @@ import {
   todayTasks,
 } from './seed-data'
 import type { TaskSeed } from './seed-data'
-import { completionSeeds, focusSeeds, historyTasks } from './seed-history'
+import {
+  completionSeeds,
+  focusSeeds,
+  historyTasks,
+  todayCompletionSeeds,
+  todayDoneTasks,
+} from './seed-history'
 
 // 根 .env 是本地唯一配置源（apps/api/src/common/config.ts 也从这里读）。
 // Prisma CLI 默认只找 cwd/.env，所以 seed 自己再加载一次，保证 `prisma db seed` 单独跑也能用。
@@ -29,11 +35,13 @@ loadDotenv({ path: fileURLToPath(new URL('../../../.env', import.meta.url)) })
 
 const allTasks: TaskSeed[] = [
   ...todayTasks,
+  ...todayDoneTasks,
   ...inboxTasks,
   ...futureTasks,
   ...poolTasks,
   ...historyTasks,
 ]
+const allCompletionSeeds = [...completionSeeds, ...todayCompletionSeeds]
 
 export const SEED_COUNTS = {
   users: 1,
@@ -41,11 +49,12 @@ export const SEED_COUNTS = {
   dailyPlans: 1,
   tasks: allTasks.length,
   today: todayTasks.length,
+  todayDone: todayDoneTasks.length,
   inbox: inboxTasks.length,
   future: futureTasks.length,
   planPool: poolTasks.length,
   history: historyTasks.length,
-  completionLogs: completionSeeds.length,
+  completionLogs: allCompletionSeeds.length,
   focusSessions: focusSeeds.length,
   events: 0,
 } as const
@@ -107,7 +116,7 @@ async function seed(prisma: PrismaClient): Promise<void> {
     })
   }
 
-  for (const log of completionSeeds) {
+  for (const log of allCompletionSeeds) {
     const { id, ...data } = log
     await prisma.completionLog.upsert({
       where: { id },
@@ -127,16 +136,19 @@ async function seed(prisma: PrismaClient): Promise<void> {
 }
 
 async function summary(prisma: PrismaClient): Promise<void> {
+  // 今日已完成项也是 bucket=DONE，统计时要从「历史完成」里排除，否则两项断言互相串数。
+  const todayDoneIds = todayDoneTasks.map((task) => task.id)
   const counts = {
     users: await prisma.user.count(),
     plans: await prisma.plan.count(),
     dailyPlans: await prisma.dailyPlan.count(),
     tasks: await prisma.task.count(),
     today: await prisma.task.count({ where: { bucket: 'TODAY' } }),
+    todayDone: await prisma.task.count({ where: { id: { in: todayDoneIds } } }),
     inbox: await prisma.task.count({ where: { bucket: 'INBOX' } }),
     future: await prisma.task.count({ where: { bucket: 'SCHEDULED' } }),
     planPool: await prisma.task.count({ where: { bucket: 'UNSCHEDULED' } }),
-    history: await prisma.task.count({ where: { bucket: 'DONE' } }),
+    history: await prisma.task.count({ where: { bucket: 'DONE', id: { notIn: todayDoneIds } } }),
     completionLogs: await prisma.completionLog.count(),
     focusSessions: await prisma.focusSession.count(),
     events: await prisma.event.count(),

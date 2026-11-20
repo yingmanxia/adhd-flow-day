@@ -1,4 +1,4 @@
-import { parseDateKey } from '@flowday/core'
+import { addDays, parseDateKey } from '@flowday/core'
 import type { TaskView } from '@flowday/types'
 
 import { prisma } from '../../db/client.js'
@@ -14,6 +14,39 @@ export class DailyRepository {
       orderBy: [{ isFrog: 'desc' }, { orderIndex: 'asc' }],
     })
     return rows.map(toTaskView)
+  }
+
+  /** 今日已完成项：原型「今日待办」卡顶部需要完成数与完成时间。 */
+  async doneToday(userId: string, dateKey: string): Promise<TaskView[]> {
+    const start = new Date(`${dateKey}T00:00:00+08:00`)
+    const end = new Date(`${addDays(dateKey, 1)}T00:00:00+08:00`)
+    const rows = await prisma.task.findMany({
+      where: {
+        userId,
+        deletedAt: null,
+        bucket: 'DONE',
+        completedAt: { gte: start, lt: end },
+      },
+      select: VIEW_SELECT,
+      orderBy: { completedAt: 'desc' },
+    })
+    return rows.map(toTaskView)
+  }
+
+  /** 原型「明天的第一件事」：取明天最早一件安排。 */
+  async tomorrowFirst(userId: string, dateKey: string): Promise<TaskView | null> {
+    const rows = await prisma.task.findMany({
+      where: {
+        userId,
+        deletedAt: null,
+        bucket: 'SCHEDULED',
+        scheduledDate: parseDateKey(addDays(dateKey, 1)),
+      },
+      select: VIEW_SELECT,
+      orderBy: [{ startDate: 'asc' }, { orderIndex: 'asc' }],
+      take: 1,
+    })
+    return rows[0] ? toTaskView(rows[0]) : null
   }
 
   async planQueue(userId: string): Promise<TaskView[]> {

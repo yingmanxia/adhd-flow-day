@@ -29,15 +29,19 @@ export class TaskService {
     return task
   }
 
-  /** 捕捉：留空日期→INBOX，今天→TODAY，未来→SCHEDULED。带 planId 表示计划下拆解出的任务。 */
+  /**
+   * 捕捉：显式 bucket 优先（「保存为今日待办 / 暂存」）；未指定时按日期与 planId 路由。
+   * 带 planId 且无日期 = 计划下拆解出的任务，进计划池；散装留空才进收件箱。
+   */
   async capture(userId: string, input: CaptureTaskInput): Promise<TaskView> {
     const today = toDateKey(new Date(), TODAY_TIMEZONE)
     const dateKey =
       input.scheduledDate ?? (input.startAt ? toDateKey(input.startAt, TODAY_TIMEZONE) : undefined)
-    // 带 planId 且无日期 = 计划下拆解出的任务，直接进计划池；散装留空才进收件箱。
-    let bucket: Bucket = input.planId ? 'UNSCHEDULED' : 'INBOX'
-    if (dateKey === today) bucket = 'TODAY'
-    else if (dateKey && addDays(today, 1) <= dateKey) bucket = 'SCHEDULED'
+    let bucket: Bucket = input.bucket ?? (input.planId ? 'UNSCHEDULED' : 'INBOX')
+    if (!input.bucket) {
+      if (dateKey === today) bucket = 'TODAY'
+      else if (dateKey && addDays(today, 1) <= dateKey) bucket = 'SCHEDULED'
+    }
 
     const data: TaskWriteData = {
       title: input.title,

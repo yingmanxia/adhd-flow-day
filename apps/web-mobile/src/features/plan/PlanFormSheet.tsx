@@ -1,29 +1,29 @@
 import { api, friendlyMessage } from '@flowday/api-client'
 import type { PlanView } from '@flowday/types'
-import { Button, Sheet } from '@flowday/ui'
+import { Button, Modal } from '@flowday/ui'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { FormEvent } from 'react'
 import { useEffect, useState } from 'react'
 
 import { useAppStore } from '../../app/store.js'
 
-interface Props {
+export function PlanFormSheet({
+  open,
+  plan,
+  onClose,
+}: {
   open: boolean
   plan?: PlanView | null
   onClose: () => void
-}
-
-export function PlanFormSheet({ open, plan, onClose }: Props) {
+}) {
   const queryClient = useQueryClient()
   const showToast = useAppStore((s) => s.showToast)
   const [title, setTitle] = useState('')
-  const [motivation, setMotivation] = useState('')
   const [expectedDate, setExpectedDate] = useState('')
 
   useEffect(() => {
     if (!open) return
     setTitle(plan?.title ?? '')
-    setMotivation(plan?.motivation ?? '')
     setExpectedDate(plan?.expectedDate ?? '')
   }, [open, plan])
 
@@ -32,12 +32,10 @@ export function PlanFormSheet({ open, plan, onClose }: Props) {
       plan
         ? api.updatePlan(plan.id, {
             title: title.trim(),
-            motivation: motivation.trim() || null,
             expectedDate: expectedDate || null,
           })
         : api.createPlan({
             title: title.trim(),
-            ...(motivation.trim() ? { motivation: motivation.trim() } : {}),
             ...(expectedDate ? { expectedDate } : {}),
           }),
     onSuccess: () => {
@@ -56,42 +54,37 @@ export function PlanFormSheet({ open, plan, onClose }: Props) {
   }
 
   return (
-    <Sheet open={open} title={plan ? '编辑计划' : '新建计划'} onClose={onClose}>
+    <Modal open={open} title={plan ? '编辑计划' : '新建计划'} onClose={onClose}>
       <form className="capture-form" onSubmit={submit}>
-        <label>
-          计划叫什么
+        <label className="form-field">
+          <span>计划名称</span>
           <input
+            className="field-input"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="例如：整理毕业论文"
+            placeholder="例如：完成行测备考第一轮"
             autoFocus
           />
         </label>
-        <label>
-          为什么做 <small>（可选）</small>
+        <label className="form-field">
+          <span>预期完成时间</span>
           <input
-            value={motivation}
-            onChange={(e) => setMotivation(e.target.value)}
-            placeholder="写一句给自己看的话"
-          />
-        </label>
-        <label>
-          期望完成日 <small>（可选）</small>
-          <input
+            className="field-input"
             type="date"
             value={expectedDate}
             onChange={(e) => setExpectedDate(e.target.value)}
+            aria-label="预期完成时间（可留空）"
           />
         </label>
-        <div className="capture-actions">
+        <div className="form-actions">
           <Button type="button" variant="ghost" onClick={onClose}>
             取消
           </Button>
           <Button type="submit" disabled={!title.trim() || save.isPending}>
-            {save.isPending ? '保存中…' : '保存'}
+            {save.isPending ? '保存中…' : '保存计划'}
           </Button>
         </div>
       </form>
-    </Sheet>
+    </Modal>
   )
 }

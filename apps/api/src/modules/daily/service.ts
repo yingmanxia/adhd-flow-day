@@ -10,6 +10,8 @@ const TODAY_TIMEZONE = 'Asia/Shanghai'
 export interface DailyView {
   date: string
   tasks: Awaited<ReturnType<DailyRepository['todayTasks']>>
+  doneTasks: Awaited<ReturnType<DailyRepository['doneToday']>>
+  tomorrowFirst: Awaited<ReturnType<DailyRepository['tomorrowFirst']>>
   planQueue: Awaited<ReturnType<DailyRepository['planQueue']>>
   inboxCount: number
   surfacedCount: number
@@ -23,12 +25,14 @@ export class DailyService {
 
   async get(userId: string, dateKey = toDateKey(new Date(), TODAY_TIMEZONE)): Promise<DailyView> {
     const surfacedCount = await this.surfaceDue(userId, dateKey)
-    const [tasks, planQueue, inboxCount] = await Promise.all([
+    const [tasks, doneTasks, tomorrowFirst, planQueue, inboxCount] = await Promise.all([
       this.repo.todayTasks(userId),
+      this.repo.doneToday(userId, dateKey),
+      this.repo.tomorrowFirst(userId, dateKey),
       this.repo.planQueue(userId),
       this.repo.inboxCount(userId),
     ])
-    return { date: dateKey, tasks, planQueue, inboxCount, surfacedCount }
+    return { date: dateKey, tasks, doneTasks, tomorrowFirst, planQueue, inboxCount, surfacedCount }
   }
 
   /**

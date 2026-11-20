@@ -109,6 +109,16 @@ describe('TaskService.capture（捕捉路由）', () => {
     )
   })
 
+  it('显式 bucket=TODAY 时不因开始时间落在今天被改判', async () => {
+    const h = makeRepo()
+    await new TaskService(h.repo).capture(USER, {
+      title: '先做这一件',
+      bucket: 'TODAY',
+      startAt: new Date().toISOString(),
+    })
+    expect(h.create).toHaveBeenCalledWith(USER, expect.objectContaining({ bucket: 'TODAY' }))
+  })
+
   it('捕捉时保留青蛙标记', async () => {
     const h = makeRepo()
     await new TaskService(h.repo).capture(USER, { title: '先做最难的那件', isFrog: true })

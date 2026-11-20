@@ -1,11 +1,13 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
+
+export type ButtonVariant = 'primary' | 'ghost' | 'outline' | 'subtle' | 'soft' | 'danger'
 
 export function Button({
   variant = 'primary',
   className = '',
   ...props
-}: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'ghost' | 'danger' }) {
+}: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: ButtonVariant }) {
   return <button className={`fd-btn fd-btn--${variant} ${className}`} {...props} />
 }
 
@@ -13,13 +15,15 @@ export function Checkbox({
   checked,
   onChange,
   label,
+  done = false,
 }: {
   checked: boolean
   onChange: (checked: boolean) => void
   label: string
+  done?: boolean
 }) {
   return (
-    <label className="fd-checkbox">
+    <label className={`fd-checkbox${done ? ' fd-checkbox--done' : ''}`}>
       <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} />
       <span aria-hidden="true" className="fd-checkbox__box">
         {checked ? '✓' : ''}
@@ -37,17 +41,7 @@ export function Fab({ onClick, label }: { onClick: () => void; label: string }) 
   )
 }
 
-export function Sheet({
-  open,
-  title,
-  onClose,
-  children,
-}: {
-  open: boolean
-  title: string
-  onClose: () => void
-  children: ReactNode
-}) {
+function useEscape(open: boolean, onClose: () => void) {
   useEffect(() => {
     if (!open) return
     const onKey = (e: KeyboardEvent) => {
@@ -56,19 +50,71 @@ export function Sheet({
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [open, onClose])
+}
 
+export function Sheet({
+  open,
+  title,
+  onClose,
+  children,
+  className = '',
+  headerExtra,
+}: {
+  open: boolean
+  title: string
+  onClose: () => void
+  children: ReactNode
+  className?: string
+  headerExtra?: ReactNode
+}) {
+  useEscape(open, onClose)
   if (!open) return null
   return (
     <div className="fd-sheet" role="dialog" aria-modal="true" aria-label={title}>
-      <div className="fd-sheet__backdrop" onClick={onClose} />
-      <div className="fd-sheet__panel">
+      <div className="fd-overlay" onClick={onClose} />
+      <div className={`fd-sheet__panel ${className}`}>
+        <div className="fd-sheet__handle" />
         <div className="fd-sheet__head">
           <strong>{title}</strong>
-          <Button variant="ghost" onClick={onClose} aria-label="关闭">
+          {headerExtra}
+          <button type="button" className="fd-close" onClick={onClose} aria-label="关闭">
             ✕
-          </Button>
+          </button>
         </div>
         <div className="fd-sheet__body">{children}</div>
+      </div>
+    </div>
+  )
+}
+
+export function Modal({
+  open,
+  title,
+  onClose,
+  children,
+  bare = false,
+}: {
+  open: boolean
+  title: string
+  onClose: () => void
+  children: ReactNode
+  bare?: boolean
+}) {
+  useEscape(open, onClose)
+  if (!open) return null
+  return (
+    <div className="fd-modal" role="dialog" aria-modal="true" aria-label={title}>
+      <div className="fd-overlay" onClick={onClose} />
+      <div className={`fd-modal__panel${bare ? ' fd-modal__panel--bare' : ''}`}>
+        {!bare && (
+          <div className="fd-modal__head">
+            <strong>{title}</strong>
+            <button type="button" className="fd-close" onClick={onClose} aria-label="关闭">
+              ✕
+            </button>
+          </div>
+        )}
+        <div className="fd-modal__body">{children}</div>
       </div>
     </div>
   )
@@ -79,16 +125,24 @@ export function Badge({
   tone = 'plain',
 }: {
   children: ReactNode
-  tone?: 'plain' | 'plan' | 'schedule'
+  tone?: 'plain' | 'plan' | 'schedule' | 'gold' | 'status'
 }) {
   return <span className={`fd-badge fd-badge--${tone}`}>{children}</span>
 }
 
-export function Progress({ value, max }: { value: number; max: number }) {
+export function Progress({
+  value,
+  max,
+  tone = 'gold',
+}: {
+  value: number
+  max: number
+  tone?: 'gold' | 'light'
+}) {
   const percent = max > 0 ? Math.round((value / max) * 100) : 0
   return (
     <div
-      className="fd-progress"
+      className={`fd-progress fd-progress--${tone}`}
       role="progressbar"
       aria-valuenow={value}
       aria-valuemin={0}
@@ -99,16 +153,54 @@ export function Progress({ value, max }: { value: number; max: number }) {
   )
 }
 
-export function Toast({ message, onDismiss }: { message: string | null; onDismiss: () => void }) {
+export interface ToastPayload {
+  title: string
+  detail?: string
+  action?: string
+  onAction?: () => void
+}
+
+export function Toast({
+  message,
+  onDismiss,
+}: {
+  message: string | ToastPayload | null
+  onDismiss: () => void
+}) {
+  const payload: ToastPayload | null = useMemo(
+    () => (typeof message === 'string' ? (message ? { title: message } : null) : message),
+    [message],
+  )
+  const duration = payload?.action ? 5000 : 3200
+
   useEffect(() => {
-    if (!message) return
-    const timer = setTimeout(onDismiss, 3200)
+    if (!payload) return
+    const timer = setTimeout(onDismiss, duration)
     return () => clearTimeout(timer)
-  }, [message, onDismiss])
-  if (!message) return null
+  }, [payload, duration, onDismiss])
+
+  if (!payload) return null
   return (
     <div className="fd-toast" role="status">
-      {message}
+      <span className="fd-toast__icon" aria-hidden="true">
+        ✓
+      </span>
+      <span className="fd-toast__text">
+        <strong>{payload.title}</strong>
+        {payload.detail && <small>{payload.detail}</small>}
+      </span>
+      {payload.action && (
+        <button
+          type="button"
+          className="fd-toast__action"
+          onClick={() => {
+            payload.onAction?.()
+            onDismiss()
+          }}
+        >
+          {payload.action} ›
+        </button>
+      )}
     </div>
   )
 }

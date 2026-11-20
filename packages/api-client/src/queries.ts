@@ -13,6 +13,8 @@ import { request } from './client.js'
 export interface DailyResponse {
   date: string
   tasks: TaskView[]
+  doneTasks: TaskView[]
+  tomorrowFirst: TaskView | null
   planQueue: TaskView[]
   inboxCount: number
   surfacedCount: number

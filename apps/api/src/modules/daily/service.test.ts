@@ -15,12 +15,21 @@ function harness() {
     Promise.resolve([] as Array<{ id: string; scheduledDate: Date; planId: string | null }>),
   )
   const todayTasks = vi.fn(() => Promise.resolve([] as TaskView[]))
+  const doneToday = vi.fn(() => Promise.resolve([] as TaskView[]))
+  const tomorrowFirst = vi.fn(() => Promise.resolve(null as TaskView | null))
   const planQueue = vi.fn(() => Promise.resolve([] as TaskView[]))
   const inboxCount = vi.fn(() => Promise.resolve(0))
   const tasksMove = vi.fn((_id: string, _data: unknown, _tx?: unknown) =>
     Promise.resolve({} as TaskView),
   )
-  const repo = { dueTasks: due, todayTasks, planQueue, inboxCount } as unknown as DailyRepository
+  const repo = {
+    dueTasks: due,
+    todayTasks,
+    doneToday,
+    tomorrowFirst,
+    planQueue,
+    inboxCount,
+  } as unknown as DailyRepository
   return {
     repo,
     tasksMove,

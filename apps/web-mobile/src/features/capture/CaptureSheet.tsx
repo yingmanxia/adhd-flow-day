@@ -1,22 +1,35 @@
 import { api, friendlyMessage } from '@flowday/api-client'
-import type { TaskPriority } from '@flowday/types'
+import type { Bucket, TaskPriority } from '@flowday/types'
 import { Button, Sheet } from '@flowday/ui'
 import { useQuery } from '@tanstack/react-query'
-import type { FormEvent } from 'react'
 import { useState } from 'react'
 
+import { toIsoAt, todayKey } from '../../app/date.js'
 import { useAppStore } from '../../app/store.js'
 
 const EMPTY = {
   title: '',
-  date: '',
-  planId: '',
-  estimate: '',
+  estimate: '5',
+  start: '09:00',
+  due: '18:00',
   priority: 'MED' as TaskPriority,
-  isFrog: false,
+  planId: '',
 }
 
-export function CaptureSheet({ onDone }: { onDone: () => void }) {
+const TIME_OPTIONS = [
+  { value: '07:00', label: '今天 07:00' },
+  { value: '09:00', label: '今天 09:00' },
+  { value: '12:00', label: '今天 12:00' },
+  { value: '18:00', label: '今天 18:00' },
+  { value: '21:00', label: '今天 21:00' },
+]
+const PRIORITIES: { value: TaskPriority; label: string }[] = [
+  { value: 'LOW', label: '低' },
+  { value: 'MED', label: '中' },
+  { value: 'HIGH', label: '高' },
+]
+
+export function CaptureSheet() {
   const open = useAppStore((s) => s.captureOpen)
   const setOpen = useAppStore((s) => s.setCaptureOpen)
   const showToast = useAppStore((s) => s.showToast)
@@ -27,36 +40,41 @@ export function CaptureSheet({ onDone }: { onDone: () => void }) {
     queryFn: api.listPlans,
     enabled: open,
   })
+  const { data: daily } = useQuery({
+    queryKey: ['daily'],
+    queryFn: () => api.getDaily(),
+    enabled: open,
+  })
+  const dateKey = daily?.date ?? todayKey()
 
   function patch(values: Partial<typeof EMPTY>) {
     setForm((current) => ({ ...current, ...values }))
   }
 
-  async function submit(e: FormEvent) {
-    e.preventDefault()
+  async function save(bucket: Extract<Bucket, 'INBOX' | 'TODAY'>) {
     if (!form.title.trim() || saving) return
     setSaving(true)
     try {
       const task = await api.captureTask({
         title: form.title.trim(),
-        ...(form.date ? { scheduledDate: form.date } : {}),
+        bucket,
+        ...(bucket === 'TODAY' ? { scheduledDate: dateKey } : {}),
         ...(form.planId ? { planId: form.planId } : {}),
         ...(form.estimate ? { estimateMin: Number(form.estimate) } : {}),
         priority: form.priority,
-        isFrog: form.isFrog,
+        ...(form.start ? { startAt: toIsoAt(dateKey, form.start) } : {}),
+        ...(form.due ? { dueAt: toIsoAt(dateKey, form.due) } : {}),
       })
-      const where =
-        task.bucket === 'TODAY'
-          ? '今日待办'
-          : task.bucket === 'SCHEDULED'
-            ? '未来安排'
-            : task.bucket === 'UNSCHEDULED'
-              ? '计划待拆解'
-              : '收件箱'
-      showToast(`已${where === '收件箱' ? '暂存' : '保存'}到${where}`)
+      const label: Record<Bucket, string> = {
+        INBOX: '收件箱',
+        UNSCHEDULED: '计划待拆解',
+        SCHEDULED: '未来安排',
+        TODAY: '今日待办',
+        DONE: '已完成',
+      }
+      showToast(`已${bucket === 'INBOX' ? '暂存' : '保存'}到${label[task.bucket]}`)
       setForm(EMPTY)
       setOpen(false)
-      onDone()
     } catch (error) {
       showToast(friendlyMessage(error))
     } finally {
@@ -65,73 +83,125 @@ export function CaptureSheet({ onDone }: { onDone: () => void }) {
   }
 
   return (
-    <Sheet open={open} title="记一件事" onClose={() => setOpen(false)}>
-      <form className="capture-form" onSubmit={(e) => void submit(e)}>
-        <label>
-          要做什么
+    <Sheet
+      open={open}
+      title="记一件事"
+      onClose={() => setOpen(false)}
+      className="fd-sheet--capture"
+    >
+      <form
+        className="capture-form"
+        onSubmit={(e) => {
+          e.preventDefault()
+          void save('TODAY')
+        }}
+      >
+        <label className="form-field">
+          <span>要做什么？</span>
           <input
+            className="field-input"
             value={form.title}
             onChange={(e) => patch({ title: e.target.value })}
-            placeholder="写下一件想做的事"
+            placeholder="例如：预约牙科复查"
             autoFocus
           />
         </label>
-        <label>
-          打算哪天做 <small>（留空先进收件箱）</small>
-          <input type="date" value={form.date} onChange={(e) => patch({ date: e.target.value })} />
-        </label>
-        <label>
-          归入计划 <small>（可选）</small>
-          <select value={form.planId} onChange={(e) => patch({ planId: e.target.value })}>
-            <option value="">不归入计划</option>
-            {plans.map((plan) => (
-              <option key={plan.id} value={plan.id}>
-                {plan.title}
-              </option>
+
+        <div className="form-field">
+          <span className="form-label">预计用时</span>
+          <div className="chip-row">
+            {['5', '15', '30'].map((minutes) => (
+              <button
+                key={minutes}
+                type="button"
+                className={`chip${form.estimate === minutes ? ' is-active' : ''}`}
+                onClick={() => patch({ estimate: minutes })}
+              >
+                {minutes} 分钟
+              </button>
             ))}
-          </select>
-        </label>
-        <div className="form-row">
-          <label>
-            预计用时（分钟）
-            <input
-              type="number"
-              min="0"
-              value={form.estimate}
-              onChange={(e) => patch({ estimate: e.target.value })}
-            />
-          </label>
-          <label>
-            优先级
+          </div>
+        </div>
+
+        <label className="form-field">
+          <span>开始时间</span>
+          <span className="field-wrap">
             <select
-              value={form.priority}
-              onChange={(e) => patch({ priority: e.target.value as TaskPriority })}
+              className="field-select"
+              value={form.start}
+              onChange={(e) => patch({ start: e.target.value })}
             >
-              <option value="HIGH">高</option>
-              <option value="MED">中</option>
-              <option value="LOW">低</option>
+              <option value="">不设置</option>
+              {TIME_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
             </select>
-          </label>
-        </div>
-        <label className="inline-check">
-          <input
-            type="checkbox"
-            checked={form.isFrog}
-            onChange={(e) => patch({ isFrog: e.target.checked })}
-          />
-          这是今天的青蛙（优先做）
+          </span>
         </label>
-        <p className="hint">
-          {form.date ? '指定日期会进入今日待办或未来安排' : '不填日期就先放在收件箱，之后再分流'}
-        </p>
-        <div className="capture-actions">
-          <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
-            取消
+
+        <label className="form-field">
+          <span>截止时间</span>
+          <span className="field-wrap">
+            <select
+              className="field-select"
+              value={form.due}
+              onChange={(e) => patch({ due: e.target.value })}
+            >
+              <option value="">不设置</option>
+              {TIME_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </span>
+        </label>
+
+        <div className="form-field">
+          <span className="form-label">优先级</span>
+          <div className="segment-row">
+            {PRIORITIES.map((item) => (
+              <button
+                key={item.value}
+                type="button"
+                className={`segment${form.priority === item.value ? ' is-active' : ''}`}
+                onClick={() => patch({ priority: item.value })}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <label className="form-field">
+          <span>归入计划（可留空，留在收件箱）</span>
+          <span className="field-wrap">
+            <select
+              className="field-select"
+              value={form.planId}
+              onChange={(e) => patch({ planId: e.target.value })}
+            >
+              <option value="">暂不归入 · 留在收件箱</option>
+              {plans.map((plan) => (
+                <option key={plan.id} value={plan.id}>
+                  {plan.title}
+                </option>
+              ))}
+            </select>
+          </span>
+        </label>
+
+        <div className="form-actions">
+          <Button variant="outline" disabled={saving} onClick={() => void save('INBOX')}>
+            暂存
           </Button>
-          <Button type="submit" disabled={saving || !form.title.trim()}>
-            {saving ? '保存中…' : '保存'}
+          <Button disabled={saving || !form.title.trim()} onClick={() => void save('TODAY')}>
+            保存为今日待办
           </Button>
         </div>
+        <p className="form-footnote">暂存 → 进收件箱待分流；保存 → 直接成为今日待办</p>
       </form>
     </Sheet>
   )

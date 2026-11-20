@@ -1,15 +1,37 @@
+/*
+ * FlowDay 移动版设计 token —— 逐项取自 Ardot 交互稿 page4。
+ * 主色 #B8800C，正文 #37352F，强调底 #FDF8E9，进度底 #FBF1D4。
+ */
 :root {
-  --color-bg: #fffaf0;
-  --color-surface: #fffdf7;
-  --color-primary: #f2b544;
-  --color-primary-strong: #d99016;
-  --color-primary-soft: #fff0cc;
-  --color-text: #37312a;
-  --color-text-muted: #8b8175;
-  --color-border: #f0e4cc;
-  --radius-sm: 8px;
+  --fd-ink: #37352f;
+  --fd-muted: #9b9a97;
+  --fd-muted-strong: #787774;
+  --fd-hint: #b4b3b0;
+  --fd-line: #ededeb;
+  --fd-line-strong: #e8e8e5;
+  --fd-gold: #b8800c;
+  --fd-gold-deep: #7a5206;
+  --fd-gold-soft: #fbf1d4;
+  --fd-cream: #fdf8e9;
+  --fd-gold-light: #f0cf72;
+  --fd-tint: #fafaf8;
+  --fd-white: #fff;
+
+  /* 兼容旧别名，供 PC 嵌入等尚未迁移的消费者使用 */
+  --color-bg: #fff;
+  --color-surface: #fff;
+  --color-primary: #b8800c;
+  --color-primary-strong: #7a5206;
+  --color-primary-soft: #fbf1d4;
+  --color-text: #37352f;
+  --color-text-muted: #9b9a97;
+  --color-border: #ededeb;
+  --radius-sm: 6px;
   --radius-md: 14px;
-  --shadow-card: 0 4px 16px rgba(120, 90, 30, 0.08);
-  --font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --shadow-card: none;
+
+  --fd-font:
+    'Noto Sans SC', 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei',
+    sans-serif;
+  --fd-font-num: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
