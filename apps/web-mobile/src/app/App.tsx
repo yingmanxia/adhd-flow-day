@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom'
 
 import { CaptureSheet } from '../features/capture/CaptureSheet.js'
+import { PlansPage } from '../features/plan/PlansPage.js'
 import { InboxPage } from '../features/triage/InboxPage.js'
 import { TodayList } from '../features/today/TodayList.js'
 
@@ -54,13 +55,22 @@ export function App() {
           >
             收件箱
           </button>
-          <div className="menu-hint">计划、专注、成就即将开放</div>
+          <button
+            onClick={() => {
+              navigate('/plans')
+              setMenuOpen(false)
+            }}
+          >
+            所有计划
+          </button>
+          <div className="menu-hint">专注、成就、未来安排即将开放</div>
         </nav>
       )}
 
       <Routes>
         <Route path="/" element={<TodayList />} />
         <Route path="/inbox" element={<InboxPage />} />
+        <Route path="/plans" element={<PlansPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
 
