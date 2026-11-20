@@ -34,7 +34,12 @@ function Wheel({
   const timer = useRef<number | undefined>(undefined)
 
   useEffect(() => {
-    ref.current?.scrollTo({ top: index * ITEM_H })
+    const el = ref.current
+    if (!el) return
+    const target = index * ITEM_H
+    // 用户手势已滚到位（误差 <1px）时不再程序化滚动，避免与手指/滚轮抢滚动。
+    if (Math.abs(el.scrollTop - target) < 1) return
+    el.scrollTo({ top: target })
   }, [index])
 
   return (

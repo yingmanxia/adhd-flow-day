@@ -1230,8 +1230,13 @@ button {
   overflow: hidden;
 }
 .wheel {
+  /* 关键：显式限定列高。grid 子项默认 min-height:auto 会被内容撑破行高，
+     导致 .wheel 无溢出、滚轮完全滑不动（选中态也无法居中）。 */
+  height: 114px;
+  min-height: 0;
   overflow-y: auto;
   scroll-snap-type: y mandatory;
+  overscroll-behavior: contain;
   scrollbar-width: none;
 }
 .wheel::-webkit-scrollbar {
