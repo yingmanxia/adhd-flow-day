@@ -42,6 +42,7 @@ export function PlanCard({
   const percent = plan.taskCount > 0 ? Math.round((plan.doneCount / plan.taskCount) * 100) : 0
   const waiting = tasks.filter((task) => task.bucket === 'UNSCHEDULED')
   const today = tasks.filter((task) => task.bucket === 'TODAY')
+  const scheduled = tasks.filter((task) => task.bucket === 'SCHEDULED')
   const done = tasks.filter((task) => task.bucket === 'DONE')
   const statusLabel =
     plan.status === 'COMPLETED' ? '已完成' : plan.status === 'ARCHIVED' ? '已归档' : '进行中'
@@ -78,6 +79,19 @@ export function PlanCard({
               <button type="button" className="arrange-btn" onClick={() => onArrange(task)}>
                 安排 ›
               </button>
+            </div>
+          ))}
+
+          {scheduled.length > 0 && (
+            <span className="plan-card__group">未来安排 · {scheduled.length}</span>
+          )}
+          {scheduled.map((task) => (
+            <div key={task.id} className="plan-task">
+              <span className="dot dot--scheduled" aria-hidden="true" />
+              <span className="plan-task__title">{task.title}</span>
+              <span className="plan-task__date">
+                {task.scheduledDate ? formatShortDate(task.scheduledDate) : ''}
+              </span>
             </div>
           ))}
 

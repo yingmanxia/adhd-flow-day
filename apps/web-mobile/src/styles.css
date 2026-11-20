@@ -348,6 +348,9 @@ button {
 .dot--today {
   background: var(--fd-gold);
 }
+.dot--scheduled {
+  background: var(--fd-muted-strong);
+}
 .queue-card__title {
   flex: 1;
   min-width: 0;
