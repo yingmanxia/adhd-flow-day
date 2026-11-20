@@ -28,7 +28,24 @@ export function PlanPickerSheet({
   }, [task])
 
   return (
-    <Sheet open={Boolean(task)} title="归入计划" onClose={onClose}>
+    <Sheet
+      open={Boolean(task)}
+      title="归入计划"
+      onClose={onClose}
+      footer={
+        <>
+          <div className="form-actions">
+            <Button variant="ghost" onClick={onClose}>
+              取消
+            </Button>
+            <Button disabled={!selected} onClick={() => selected && onConfirm(selected)}>
+              确认归入
+            </Button>
+          </div>
+          <p className="form-footnote">归入后进入计划待拆解，不占用今日清单</p>
+        </>
+      }
+    >
       <div className="picker-context">
         <strong>{task?.title}</strong>
         <small>想放进哪个计划？</small>
@@ -56,15 +73,6 @@ export function PlanPickerSheet({
       >
         ＋ 没有合适的？新建一个计划并归入
       </button>
-      <div className="form-actions">
-        <Button variant="ghost" onClick={onClose}>
-          取消
-        </Button>
-        <Button disabled={!selected} onClick={() => selected && onConfirm(selected)}>
-          确认归入
-        </Button>
-      </div>
-      <p className="form-footnote">归入后进入计划待拆解，不占用今日清单</p>
     </Sheet>
   )
 }

@@ -61,6 +61,7 @@ export function Sheet({
   children,
   className = '',
   headerExtra,
+  footer,
 }: {
   open: boolean
   title: string
@@ -68,6 +69,7 @@ export function Sheet({
   children: ReactNode
   className?: string
   headerExtra?: ReactNode
+  footer?: ReactNode
 }) {
   useEscape(open, onClose)
   const { mounted, unmount } = usePresence(open)
@@ -90,7 +92,9 @@ export function Sheet({
             ✕
           </button>
         </div>
+        {/* 中部内容随抽屉限高滚动；标题与底部按钮区始终固定可见。 */}
         <div className="fd-sheet__body">{children}</div>
+        {footer && <div className="fd-sheet__foot">{footer}</div>}
       </div>
     </div>
   )

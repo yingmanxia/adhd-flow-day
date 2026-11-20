@@ -177,7 +177,9 @@
   width: 100%;
   max-height: 88vh;
   margin: 0 auto;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   border-radius: 24px 24px 0 0;
   background: var(--fd-white);
   box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.16);
@@ -188,6 +190,7 @@
   animation: fd-slide-up-out 0.3s cubic-bezier(0.755, 0.05, 0.855, 0.06) both;
 }
 .fd-sheet__handle {
+  flex-shrink: 0;
   width: 40px;
   height: 4px;
   margin: 0 auto 16px;
@@ -196,6 +199,7 @@
 }
 .fd-sheet__head,
 .fd-modal__head {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -219,6 +223,17 @@
   font-size: 16px;
   cursor: pointer;
   padding: 2px 4px;
+}
+/* 抽屉中部：超过限高时内部滚动，头部/底部固定。 */
+.fd-sheet__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.fd-sheet__foot {
+  flex-shrink: 0;
+  padding-top: 16px;
 }
 .fd-sheet__body,
 .fd-modal__body {

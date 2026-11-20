@@ -97,6 +97,19 @@ export function CaptureSheet() {
       title="记一件事"
       onClose={() => setOpen(false)}
       className="fd-sheet--capture"
+      footer={
+        <>
+          <div className="form-actions">
+            <Button variant="outline" disabled={saving} onClick={() => void save('INBOX')}>
+              暂存
+            </Button>
+            <Button disabled={saving || !form.title.trim()} onClick={() => void save('TODAY')}>
+              保存为今日待办
+            </Button>
+          </div>
+          <p className="form-footnote">暂存 → 进收件箱待分流；保存 → 直接成为今日待办</p>
+        </>
+      }
     >
       <form
         className="capture-form"
@@ -185,16 +198,6 @@ export function CaptureSheet() {
             </select>
           </span>
         </label>
-
-        <div className="form-actions">
-          <Button variant="outline" disabled={saving} onClick={() => void save('INBOX')}>
-            暂存
-          </Button>
-          <Button disabled={saving || !form.title.trim()} onClick={() => void save('TODAY')}>
-            保存为今日待办
-          </Button>
-        </div>
-        <p className="form-footnote">暂存 → 进收件箱待分流；保存 → 直接成为今日待办</p>
       </form>
 
       <DateTimePicker

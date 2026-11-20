@@ -42,6 +42,21 @@ export function MergeSheet() {
           第 {mergeIndex + 1} / {mergeTasks.length} 件
         </span>
       }
+      footer={
+        current && (
+          <>
+            <div className="merge-actions">
+              <Button variant="ghost" onClick={nextMerge}>
+                稍后
+              </Button>
+              <Button disabled={merge.isPending} onClick={() => merge.mutate(current.id)}>
+                并入今日并继续 ›
+              </Button>
+            </div>
+            <p className="merge-footer">并入后直接出现在今日待办，可随时调整</p>
+          </>
+        )
+      }
     >
       {current && (
         <>
@@ -57,15 +72,6 @@ export function MergeSheet() {
             <strong>{current.title}</strong>
           </div>
           <p className="merge-note">处理完这件，自动进入下一件，不用重复点开。</p>
-          <div className="merge-actions">
-            <Button variant="ghost" onClick={nextMerge}>
-              稍后
-            </Button>
-            <Button disabled={merge.isPending} onClick={() => merge.mutate(current.id)}>
-              并入今日并继续 ›
-            </Button>
-          </div>
-          <p className="merge-footer">并入后直接出现在今日待办，可随时调整</p>
         </>
       )}
     </Sheet>

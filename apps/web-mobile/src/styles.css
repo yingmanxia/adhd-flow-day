@@ -1090,7 +1090,7 @@ button {
 .picker-wheel {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  height: 200px;
+  height: 114px; /* 三行可见（设计稿 45:549） */
   border-radius: 10px;
   overflow: hidden;
   background: var(--fd-gold-light);

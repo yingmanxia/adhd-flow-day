@@ -4,7 +4,7 @@ import { Button, Sheet } from '@flowday/ui'
 import { formatDateTimeValue, toTimeString, todayKey, type DateTimeValue } from '../app/date.js'
 
 const WEEK_HEADERS = ['一', '二', '三', '四', '五', '六', '日'] as const
-const ITEM_H = 40
+const ITEM_H = 38 // 设计稿滚轮高 114 = 3 行可见（选中行 + 上下各 1 行）
 
 /** 月历格子（周一起始），cell 为日或 null 补位。 */
 function monthGrid(year: number, month: number): (number | null)[][] {
@@ -52,7 +52,7 @@ function Wheel({
         }, 120)
       }}
     >
-      <div style={{ height: ITEM_H * 2 }} aria-hidden="true" />
+      <div style={{ height: ITEM_H }} aria-hidden="true" />
       {items.map((item, i) => (
         <div
           key={item}
@@ -65,7 +65,7 @@ function Wheel({
           {item}
         </div>
       ))}
-      <div style={{ height: ITEM_H * 2 }} aria-hidden="true" />
+      <div style={{ height: ITEM_H }} aria-hidden="true" />
     </div>
   )
 }
@@ -128,14 +128,27 @@ export function DateTimePicker({
   const selectedTime = timeOn ? toTimeString({ dateKey, time: { period, hour, minute } }) : null
 
   return (
-    <Sheet open={open} title={title} onClose={onClose} className="fd-sheet--picker">
+    <Sheet
+      open={open}
+      title={title}
+      onClose={onClose}
+      className="fd-sheet--picker"
+      footer={
+        <div className="form-actions">
+          <Button variant="ghost" onClick={onClose}>
+            取消
+          </Button>
+          <Button onClick={confirm}>确认安排</Button>
+        </div>
+      }
+    >
       {taskTitle && (
         <div className="picker-context-bar">
           <strong>{taskTitle}</strong>
-          <span>选好日期再定时</span>
+          <span>选好日期再定时分</span>
         </div>
       )}
-      <p className="picker-subtitle">日期必选 · 具体时刻可选</p>
+      <p className="picker-subtitle">默认今天当时 · 可改任意日期与时刻</p>
 
       <div className="picker-cal">
         <div className="picker-cal__head">
@@ -195,12 +208,6 @@ export function DateTimePicker({
         已选 ·{' '}
         {formatDateTimeValue({ dateKey, time: selectedTime ? { period, hour, minute } : null })}
       </p>
-      <div className="form-actions">
-        <Button variant="ghost" onClick={onClose}>
-          取消
-        </Button>
-        <Button onClick={confirm}>确认安排</Button>
-      </div>
     </Sheet>
   )
 }
