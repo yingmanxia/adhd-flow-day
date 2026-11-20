@@ -13,6 +13,7 @@ import {
 } from '../../app/date.js'
 import { useAppStore } from '../../app/store.js'
 import { DateTimePicker } from '../../components/DateTimePicker.js'
+import { PlanSelect } from '../../components/PlanSelect.js'
 
 const EMPTY = {
   title: '',
@@ -186,23 +187,16 @@ export function CaptureSheet() {
             </div>
           </div>
 
-          <label className="form-field">
+          <div className="form-field">
             <span>归入计划（可留空，留在收件箱）</span>
-            <span className="field-wrap">
-              <select
-                className="field-select"
-                value={form.planId}
-                onChange={(e) => patch({ planId: e.target.value })}
-              >
-                <option value="">暂不归入 · 留在收件箱</option>
-                {plans.map((plan) => (
-                  <option key={plan.id} value={plan.id}>
-                    {plan.title}
-                  </option>
-                ))}
-              </select>
-            </span>
-          </label>
+            <PlanSelect
+              plans={plans}
+              value={form.planId}
+              onChange={(planId) => patch({ planId })}
+              placeholder="搜索或选择计划"
+              clearLabel="暂不归入 · 留在收件箱"
+            />
+          </div>
         </form>
       </Sheet>
 
