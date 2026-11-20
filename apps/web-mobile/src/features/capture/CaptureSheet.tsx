@@ -11,6 +11,7 @@ import {
   todayKey,
   type DateTimeValue,
 } from '../../app/date.js'
+import { invalidateTaskViews } from '../../app/queries.js'
 import { useAppStore } from '../../app/store.js'
 import { DateTimePicker } from '../../components/DateTimePicker.js'
 import { PlanSelect } from '../../components/PlanSelect.js'
@@ -81,8 +82,9 @@ export function CaptureSheet() {
         DONE: '已完成',
       }
       showToast(`已${bucket === 'INBOX' ? '暂存' : '保存'}到${label[task.bucket]}`)
-      // 顶栏收件箱角标读 daily 聚合，暂存/保存后立即失效缓存刷新数字。
-      void queryClient.invalidateQueries({ queryKey: ['daily'] })
+      // 暂存/保存后失效全部任务派生视图：顶栏角标读 daily、收件箱列表读 inbox，
+      // 只刷 daily 会出现「角标 +1 但列表没新任务」的缓存不一致。
+      invalidateTaskViews(queryClient)
       setForm(EMPTY)
       setOpen(false)
     } catch (error) {

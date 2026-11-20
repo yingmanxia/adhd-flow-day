@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 
 import { useAppStore } from '../../app/store.js'
+import { invalidateTaskViews } from '../../app/queries.js'
 
 import { DeleteConfirm } from './DeleteConfirm.js'
 import { PlanPickerSheet } from './PlanPickerSheet.js'
@@ -27,9 +28,7 @@ export function InboxPage() {
   const { data: inbox } = useQuery({ queryKey: ['inbox'], queryFn: api.listInbox })
 
   function invalidate() {
-    void queryClient.invalidateQueries({ queryKey: ['inbox'] })
-    void queryClient.invalidateQueries({ queryKey: ['daily'] })
-    void queryClient.invalidateQueries({ queryKey: ['plans'] })
+    invalidateTaskViews(queryClient)
   }
 
   const triage = useMutation({
