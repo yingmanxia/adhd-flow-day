@@ -108,7 +108,7 @@ export function PlanCard({
               拆解任务
             </button>
           </div>
-          <p className="plan-card__hint">点其他计划同样展开任务列表 · 收起再点一次</p>
+          <p className="plan-card__hint">再点一次收起 · 各计划的展开状态互相独立</p>
         </>
       )}
     </article>

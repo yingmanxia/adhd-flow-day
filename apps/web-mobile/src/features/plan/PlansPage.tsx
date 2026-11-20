@@ -1,7 +1,7 @@
 import { api, friendlyMessage } from '@flowday/api-client'
 import type { PlanView, TaskView } from '@flowday/types'
 import { useQuery } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { useAppStore } from '../../app/store.js'
 
@@ -13,7 +13,9 @@ type Filter = 'ALL' | 'ACTIVE' | 'COMPLETED'
 export function PlansPage() {
   const openMerge = useAppStore((s) => s.openMerge)
   const [filter, setFilter] = useState<Filter>('ALL')
-  const [expandedId, setExpandedId] = useState<string | null>(null)
+  // 各计划展开/收起互相独立；首次加载默认展开第一个。
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
+  const defaultExpandedRef = useRef(false)
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<PlanView | null>(null)
   const {
@@ -24,8 +26,20 @@ export function PlansPage() {
   } = useQuery({ queryKey: ['plans'], queryFn: api.listPlans })
 
   useEffect(() => {
-    if (!expandedId && plans.length > 0) setExpandedId(plans[0]!.id)
-  }, [plans, expandedId])
+    if (!defaultExpandedRef.current && plans.length > 0) {
+      defaultExpandedRef.current = true
+      setExpandedIds(new Set([plans[0]!.id]))
+    }
+  }, [plans])
+
+  function toggleExpanded(planId: string) {
+    setExpandedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(planId)) next.delete(planId)
+      else next.add(planId)
+      return next
+    })
+  }
 
   if (isLoading) return <div className="page-content plans-page hint">正在整理计划…</div>
   if (isError) return <div className="page-content plans-page hint">{friendlyMessage(error)}</div>
@@ -86,8 +100,8 @@ export function PlansPage() {
         <PlanCard
           key={plan.id}
           plan={plan}
-          expanded={expandedId === plan.id}
-          onToggle={() => setExpandedId(expandedId === plan.id ? null : plan.id)}
+          expanded={expandedIds.has(plan.id)}
+          onToggle={() => toggleExpanded(plan.id)}
           onArrange={arrange}
         />
       ))}
