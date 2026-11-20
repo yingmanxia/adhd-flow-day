@@ -92,114 +92,122 @@ export function CaptureSheet() {
   }
 
   return (
-    <Sheet
-      open={open}
-      title="记一件事"
-      onClose={() => setOpen(false)}
-      className="fd-sheet--capture"
-      footer={
-        <>
-          <div className="form-actions">
-            <Button variant="outline" disabled={saving} onClick={() => void save('INBOX')}>
-              暂存
-            </Button>
-            <Button disabled={saving || !form.title.trim()} onClick={() => void save('TODAY')}>
-              保存为今日待办
-            </Button>
-          </div>
-          <p className="form-footnote">暂存 → 进收件箱待分流；保存 → 直接成为今日待办</p>
-        </>
-      }
-    >
-      <form
-        className="capture-form"
-        onSubmit={(e) => {
-          e.preventDefault()
-          void save('TODAY')
-        }}
+    <>
+      <Sheet
+        open={open}
+        title="记一件事"
+        onClose={() => setOpen(false)}
+        className="fd-sheet--capture"
+        footer={
+          <>
+            <div className="form-actions">
+              <Button variant="outline" disabled={saving} onClick={() => void save('INBOX')}>
+                暂存
+              </Button>
+              <Button disabled={saving || !form.title.trim()} onClick={() => void save('TODAY')}>
+                保存为今日待办
+              </Button>
+            </div>
+            <p className="form-footnote">暂存 → 进收件箱待分流；保存 → 直接成为今日待办</p>
+          </>
+        }
       >
-        <label className="form-field">
-          <span>要做什么？</span>
-          <input
-            className="field-input"
-            value={form.title}
-            onChange={(e) => patch({ title: e.target.value })}
-            placeholder="例如：预约牙科复查"
-            autoFocus
-          />
-        </label>
+        <form
+          className="capture-form"
+          onSubmit={(e) => {
+            e.preventDefault()
+            void save('TODAY')
+          }}
+        >
+          <label className="form-field">
+            <span>要做什么？</span>
+            <input
+              className="field-input"
+              value={form.title}
+              onChange={(e) => patch({ title: e.target.value })}
+              placeholder="例如：预约牙科复查"
+              autoFocus
+            />
+          </label>
 
-        <div className="form-field">
-          <span className="form-label">预计用时</span>
-          <div className="chip-row">
-            {['5', '15', '30'].map((minutes) => (
-              <button
-                key={minutes}
-                type="button"
-                className={`chip${form.estimate === minutes ? ' is-active' : ''}`}
-                onClick={() => patch({ estimate: minutes })}
-              >
-                {minutes} 分钟
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="form-field">
-          <span className="form-label">开始时间</span>
-          <button type="button" className="field-select--button" onClick={() => setPicker('start')}>
-            <span className={form.start ? '' : 'is-placeholder'}>
-              {form.start ? formatDateTimeValue(form.start) : '不设置'}
-            </span>
-            <span aria-hidden="true">⌄</span>
-          </button>
-        </div>
-
-        <div className="form-field">
-          <span className="form-label">截止时间</span>
-          <button type="button" className="field-select--button" onClick={() => setPicker('due')}>
-            <span className={form.due ? '' : 'is-placeholder'}>
-              {form.due ? formatDateTimeValue(form.due) : '不设置'}
-            </span>
-            <span aria-hidden="true">⌄</span>
-          </button>
-        </div>
-
-        <div className="form-field">
-          <span className="form-label">优先级</span>
-          <div className="segment-row">
-            {PRIORITIES.map((item) => (
-              <button
-                key={item.value}
-                type="button"
-                className={`segment${form.priority === item.value ? ' is-active' : ''}`}
-                onClick={() => patch({ priority: item.value })}
-              >
-                {item.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <label className="form-field">
-          <span>归入计划（可留空，留在收件箱）</span>
-          <span className="field-wrap">
-            <select
-              className="field-select"
-              value={form.planId}
-              onChange={(e) => patch({ planId: e.target.value })}
-            >
-              <option value="">暂不归入 · 留在收件箱</option>
-              {plans.map((plan) => (
-                <option key={plan.id} value={plan.id}>
-                  {plan.title}
-                </option>
+          <div className="form-field">
+            <span className="form-label">预计用时</span>
+            <div className="chip-row">
+              {['5', '15', '30'].map((minutes) => (
+                <button
+                  key={minutes}
+                  type="button"
+                  className={`chip${form.estimate === minutes ? ' is-active' : ''}`}
+                  onClick={() => patch({ estimate: minutes })}
+                >
+                  {minutes} 分钟
+                </button>
               ))}
-            </select>
-          </span>
-        </label>
-      </form>
+            </div>
+          </div>
 
+          <div className="form-field">
+            <span className="form-label">开始时间</span>
+            <button
+              type="button"
+              className="field-select--button"
+              onClick={() => setPicker('start')}
+            >
+              <span className={form.start ? '' : 'is-placeholder'}>
+                {form.start ? formatDateTimeValue(form.start) : '不设置'}
+              </span>
+              <span aria-hidden="true">⌄</span>
+            </button>
+          </div>
+
+          <div className="form-field">
+            <span className="form-label">截止时间</span>
+            <button type="button" className="field-select--button" onClick={() => setPicker('due')}>
+              <span className={form.due ? '' : 'is-placeholder'}>
+                {form.due ? formatDateTimeValue(form.due) : '不设置'}
+              </span>
+              <span aria-hidden="true">⌄</span>
+            </button>
+          </div>
+
+          <div className="form-field">
+            <span className="form-label">优先级</span>
+            <div className="segment-row">
+              {PRIORITIES.map((item) => (
+                <button
+                  key={item.value}
+                  type="button"
+                  className={`segment${form.priority === item.value ? ' is-active' : ''}`}
+                  onClick={() => patch({ priority: item.value })}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <label className="form-field">
+            <span>归入计划（可留空，留在收件箱）</span>
+            <span className="field-wrap">
+              <select
+                className="field-select"
+                value={form.planId}
+                onChange={(e) => patch({ planId: e.target.value })}
+              >
+                <option value="">暂不归入 · 留在收件箱</option>
+                {plans.map((plan) => (
+                  <option key={plan.id} value={plan.id}>
+                    {plan.title}
+                  </option>
+                ))}
+              </select>
+            </span>
+          </label>
+        </form>
+      </Sheet>
+
+      {/* 时间选择抽屉必须渲染在外层 Sheet 之外：外层面板的动画 transform 会把
+        内层 fixed 弹层变成相对面板定位，导致被裁剪、遮罩错位。 */}
       <DateTimePicker
         open={picker !== null}
         title={picker === 'start' ? '开始时间' : '截止时间'}
@@ -211,6 +219,6 @@ export function CaptureSheet() {
         }}
         onClose={() => setPicker(null)}
       />
-    </Sheet>
+    </>
   )
 }

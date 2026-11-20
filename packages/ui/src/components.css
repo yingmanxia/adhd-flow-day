@@ -169,6 +169,11 @@
   inset: 0;
   z-index: 50;
 }
+/* 出场动画期间整体禁用指针事件：防止遮罩/面板吞掉下方元素点击或误触。 */
+.fd-sheet.is-closing,
+.fd-modal.is-closing {
+  pointer-events: none;
+}
 .fd-sheet__panel {
   position: absolute;
   left: 0;

@@ -96,6 +96,13 @@ export function DateTimePicker({
   const [hour, setHour] = useState(9)
   const [minute, setMinute] = useState(0)
 
+  // 关闭时 title prop 会变（如 picker 复位为 null），出场动画期间冻结为最后一次打开的标题，避免闪变。
+  const lastTitleRef = useRef(title)
+  useEffect(() => {
+    if (open) lastTitleRef.current = title
+  }, [open, title])
+  const shownTitle = open ? title : lastTitleRef.current
+
   // 每次拉起按当前值重置；无值时默认「今天 + 不带时刻」。
   useEffect(() => {
     if (!open) return
@@ -130,7 +137,7 @@ export function DateTimePicker({
   return (
     <Sheet
       open={open}
-      title={title}
+      title={shownTitle}
       onClose={onClose}
       className="fd-sheet--picker"
       footer={

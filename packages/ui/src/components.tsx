@@ -76,7 +76,12 @@ export function Sheet({
   if (!mounted) return null
   const closing = !open
   return (
-    <div className="fd-sheet" role="dialog" aria-modal="true" aria-label={title}>
+    <div
+      className={`fd-sheet${closing ? ' is-closing' : ''}`}
+      role="dialog"
+      aria-modal="true"
+      aria-label={title}
+    >
       <div className={`fd-overlay${closing ? ' is-closing' : ''}`} onClick={onClose} />
       <div
         className={`fd-sheet__panel ${className}${closing ? ' is-closing' : ''}`}
@@ -118,7 +123,12 @@ export function Modal({
   if (!mounted) return null
   const closing = !open
   return (
-    <div className="fd-modal" role="dialog" aria-modal="true" aria-label={title}>
+    <div
+      className={`fd-modal${closing ? ' is-closing' : ''}`}
+      role="dialog"
+      aria-modal="true"
+      aria-label={title}
+    >
       <div className={`fd-overlay${closing ? ' is-closing' : ''}`} onClick={onClose} />
       <div
         className={`fd-modal__panel${bare ? ' fd-modal__panel--bare' : ''}${
