@@ -6,11 +6,13 @@ const envSchema = z.object({
   APP_NAME: z.string().min(1).default('ADHD Flow Day'),
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   HOST: z.string().min(1).default('127.0.0.1'),
-  PORT: z.coerce.number().int().min(1).max(65535),
+  // Serverless（Vercel Function）不监听端口，PORT 给默认值避免云端强制注入占位值。
+  PORT: z.coerce.number().int().min(1).max(65535).default(3000),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
   CORS_ORIGIN: z.string().optional(),
   DATABASE_URL: z.string().min(1),
-  REDIS_URL: z.string().min(1),
+  // Redis 本期无消费方（仅占位）；云端不必注入，故放宽为可选。
+  REDIS_URL: z.string().optional(),
 })
 
 export type AppConfig = z.infer<typeof envSchema> & { startedAt: Date }

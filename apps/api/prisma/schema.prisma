@@ -5,11 +5,15 @@
 
 generator client {
   provider = "prisma-client-js"
+  // 无 Rust engine：避免 Vercel 打包剥离 libquery_engine*.node 导致运行时 503。
+  // 需配合 @prisma/adapter-pg 使用（见 src/db/client.ts）。
+  engineType = "client"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 enum PlanStatus {

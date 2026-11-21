@@ -1,4 +1,5 @@
 import { fileURLToPath } from 'node:url'
+import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '@prisma/client'
 import { config as loadDotenv } from 'dotenv'
 import {
@@ -164,7 +165,9 @@ async function summary(prisma: PrismaClient): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  const prisma = new PrismaClient()
+  // 与运行时同款无 Rust engine 配置；DATABASE_URL 由上方 dotenv 加载。
+  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
+  const prisma = new PrismaClient({ adapter })
   try {
     await seed(prisma)
     await summary(prisma)
