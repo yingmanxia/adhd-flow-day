@@ -12,7 +12,9 @@ configureApiClient({ baseUrl: String(import.meta.env.VITE_API_BASE_URL ?? '/api'
 
 const queryClient = new QueryClient({
   defaultOptions: {
-    queries: { staleTime: 30_000, retry: 1, refetchOnWindowFocus: false },
+    // 重试统一由 api-client 处理：HTTP 非 2xx 不重试，仅网络错误重试 1 次。
+    // 这里必须关掉，否则两层叠加会把一次 500 放大成多次请求。
+    queries: { staleTime: 30_000, retry: false, refetchOnWindowFocus: false },
   },
 })
 

@@ -32,12 +32,18 @@ async function parseError(response: Response): Promise<ApiClientError> {
 
 export interface RequestOptions extends Omit<RequestInit, 'body'> {
   body?: unknown
+  /** 仅网络层错误（未收到 HTTP 响应）的重试次数；HTTP 非 2xx 一律不重试。默认 1。 */
   retries?: number
 }
 
-/** 4xx 不重试；5xx 与网络错误最多重试 3 次（指数退避）。 */
+/**
+ * 只要拿到了 HTTP 状态码（非 2xx）就是服务端的明确答复，立即抛错、不重试——
+ * 500 重试不会让缺表/缺权限的错误自己好，只会放大请求量。
+ * 只有 fetch 自身失败（断网/DNS/超时）才重试，默认最多 1 次。
+ * 注意：React Query 层应设 retry: false，不要再叠加一层重试。
+ */
 export async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const { body, retries = 3, ...init } = options
+  const { body, retries = 1, ...init } = options
   const url = `${baseUrl}${path}`
   const headers = {
     ...init.headers,
@@ -54,14 +60,12 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
       if (response.ok) {
         return response.status === 204 ? (undefined as T) : ((await response.json()) as T)
       }
-      const error = await parseError(response)
-      if (response.status < 500 || attempt >= retries) throw error
+      // 非 2xx（含 4xx/5xx）：直接抛错，不重试。
+      throw await parseError(response)
     } catch (error) {
-      if (error instanceof ApiClientError && error.status < 500) throw error
+      if (error instanceof ApiClientError) throw error
       if (attempt >= retries) {
-        throw error instanceof ApiClientError
-          ? error
-          : new ApiClientError('网络好像断开了', 'NETWORK_ERROR', 0)
+        throw new ApiClientError('网络好像断开了', 'NETWORK_ERROR', 0)
       }
     }
     await sleep(300 * 2 ** attempt)
