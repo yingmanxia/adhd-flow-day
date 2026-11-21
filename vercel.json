@@ -5,11 +5,7 @@
   "installCommand": "pnpm install --frozen-lockfile",
   "functions": {
     "api/index.js": {
-      "includeFiles": [
-        "node_modules/.pnpm/@prisma+client@*/node_modules/.prisma/client/*.wasm",
-        "node_modules/.prisma/client/*.wasm",
-        "apps/api/node_modules/.prisma/client/*.wasm"
-      ]
+      "includeFiles": "{node_modules/.pnpm/@prisma+client@*/node_modules,node_modules,apps/api/node_modules}/.prisma/client/*.wasm"
     }
   },
   "rewrites": [
