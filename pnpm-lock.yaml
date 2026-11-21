@@ -11,6 +11,9 @@ importers:
       '@flowday/eslint-config':
         specifier: workspace:*
         version: link:packages/eslint-config
+      esbuild:
+        specifier: 0.28.2
+        version: 0.28.2
       eslint:
         specifier: ^9.39.0
         version: 9.39.5(jiti@2.7.0)

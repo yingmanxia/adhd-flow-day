@@ -12,7 +12,8 @@
     "dev:api": "pnpm --filter @flowday/api dev",
     "dev:pc": "pnpm --filter @flowday/web-pc dev",
     "dev:mobile": "pnpm --filter @flowday/web-mobile dev",
-    "build": "turbo run build",
+    "build": "turbo run build && pnpm build:function",
+    "build:function": "node scripts/bundle-vercel-function.mjs",
     "typecheck": "turbo run typecheck",
     "lint": "eslint . --max-warnings 0 && prettier --check .",
     "lint:fix": "eslint . --fix && prettier --write .",
@@ -23,6 +24,7 @@
   },
   "devDependencies": {
     "@flowday/eslint-config": "workspace:*",
+    "esbuild": "0.28.2",
     "eslint": "^9.39.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.6",
