@@ -10,7 +10,16 @@ const queryClient = new QueryClient({
   defaultOptions: {
     // 重试统一由 api-client 处理：HTTP 非 2xx 不重试，仅网络错误重试 1 次。
     // 这里必须关掉，否则两层叠加会把一次 500 放大成多次请求。
-    queries: { staleTime: 30_000, retry: false, refetchOnWindowFocus: false },
+    // refetchOnMount 也要关：daily 500 时 query 进 error 态且无缓存数据，
+    // 被视为 stale，多个组件挂载/路由切回会反复触发请求（串行重复，
+    // HTTP 层 inFlight 去重只挡并发挡不住）。数据刷新交给写操作后的
+    // invalidateQueries，不依赖挂载时机。
+    queries: {
+      staleTime: 30_000,
+      retry: false,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+    },
   },
 })
 
