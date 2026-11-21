@@ -252,6 +252,9 @@ importers:
         specifier: ^18.3.1
         version: 18.3.1
     devDependencies:
+      '@types/react':
+        specifier: ^18.3.27
+        version: 18.3.31
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
